@@ -1,149 +1,2151 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MARMITARIA DEGGUST - Cardápio</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
-</head>
-<body class="bg-slate-900 text-slate-100 min-h-screen pb-24">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Marmitaria Deggust - Cardápio & Pedidos</title>
+  <meta name="description" content="App do Cliente da Marmitaria Deggust. Marmitas caseiras com sabor inesquecível, entrega rápida e pedidos via WhatsApp.">
+  <meta name="theme-color" content="#090d16">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Deggust">
 
-  <!-- Header -->
-  <header class="bg-slate-800 border-b border-slate-700 p-4 sticky top-0 z-50 shadow-md">
-    <div class="max-w-xl mx-auto flex items-center gap-3">
-      <img src="logo.png" alt="Logo" class="w-12 h-12 rounded-full border border-orange-500 object-cover" onerror="this.src='https://via.placeholder.com/48'">
-      <div>
-        <h1 class="font-bold text-lg text-white">MARMITARIA DEGGUST</h1>
-        <p class="text-xs text-emerald-400 flex items-center gap-1 font-medium">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Cardápio Atualizado
-        </p>
+  <!-- Ícones para PWA e Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/icon.svg">
+  <link rel="icon" type="image/png" sizes="192x192" href="/pwa-192x192.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+  <!-- Manifest PWA Oficial do Cliente -->
+  <link rel="manifest" id="pwa-manifest" href="/manifest-cliente.json">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#fffbeb',
+              100: '#fef3c7',
+              200: '#fde68a',
+              300: '#fcd34d',
+              400: '#fbbf24',
+              500: '#f59e0b',
+              600: '#d97706',
+              700: '#b45309',
+              800: '#92400e',
+              900: '#78350f',
+            },
+            darkbg: '#090d16',
+            darkcard: '#111827',
+            darkborder: '#1f293d'
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* Suporte a Safe Area para dispositivos móveis */
+    .pb-safe {
+      padding-bottom: env(safe-area-inset-bottom, 16px);
+    }
+    .pt-safe {
+      padding-top: env(safe-area-inset-top, 0px);
+    }
+    /* Estilização sutil de rolagem */
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: #090d16; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #f59e0b; }
+    
+    /* Animação suave para troca de abas */
+    .tab-pane {
+      display: none;
+      opacity: 0;
+      transition: opacity 0.2s ease-in-out;
+    }
+    .tab-pane.active {
+      display: block;
+      opacity: 1;
+    }
+  </style>
+</head>
+<body class="bg-darkbg text-slate-100 min-h-screen flex flex-col font-sans antialiased selection:bg-amber-500 selection:text-slate-950 pb-20">
+
+  <!-- Tela de Abertura do App (Splash Screen) -->
+  <div id="app-splash-screen" class="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-slate-950 text-white transition-opacity duration-500">
+    <div class="flex flex-col items-center text-center p-6 max-w-xs animate-in fade-in zoom-in duration-300">
+      <div class="relative mb-5">
+        <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl p-1 bg-gradient-to-tr from-amber-500 via-amber-400 to-amber-600 shadow-2xl shadow-amber-500/30 flex items-center justify-center overflow-hidden">
+          <img id="client-splash-logo-img" src="/icon.svg" alt="Logo Marmitaria Deggust" class="w-full h-full object-cover rounded-[22px] bg-slate-900" />
+        </div>
+        <div class="absolute -bottom-2 -right-2 bg-emerald-500 text-slate-950 p-1.5 rounded-full shadow-md">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+        </div>
       </div>
+      
+      <h1 class="font-heading font-extrabold text-2xl tracking-tight text-white mb-1">Marmitaria Deggust</h1>
+      <p class="text-xs text-amber-400 font-medium tracking-wide">Marmitas Caseiras com Sabor & Tradição</p>
+      
+      <div class="mt-8 flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+        <span class="text-[11px] text-slate-400 font-semibold tracking-wider uppercase">Carregando Cardápio...</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 1. CABEÇALHO FIXO NO TOPO (HEADER NATIVO)  -->
+  <!-- ========================================== -->
+  <header class="sticky top-0 z-40 bg-slate-950/95 backdrop-blur-md border-b border-slate-800/90 pt-safe">
+    <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between gap-2">
+      
+      <!-- Marca & Status Aberto -->
+      <div class="flex items-center gap-2.5 min-w-0">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-600 to-amber-400 p-0.5 shadow-md shadow-amber-500/20 flex-shrink-0">
+          <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center overflow-hidden">
+            <img id="client-header-logo-img" src="/icon.svg" alt="Logo Marmitaria Deggust" class="w-full h-full object-cover rounded-[10px]" />
+          </div>
+        </div>
+        <div class="truncate">
+          <div class="flex items-center gap-1.5">
+            <h1 class="text-sm sm:text-base font-bold text-white tracking-tight truncate">Marmitaria Deggust</h1>
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex-shrink-0">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1 animate-pulse"></span> Aberto
+            </span>
+          </div>
+          <p class="text-[11px] text-slate-400 truncate">Comida caseira com tempero especial</p>
+        </div>
+      </div>
+
+      <!-- Botão Menu Lateral (Três Traços) -->
+      <div class="flex-shrink-0 flex items-center">
+        <button 
+          id="btn-client-menu" 
+          type="button" 
+          class="p-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-white border border-slate-700/80 transition-all active:scale-95 cursor-pointer flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+          aria-label="Abrir menu lateral"
+          title="Menu de Opções"
+        >
+          <!-- Três Traços -->
+          <svg class="w-5 h-5 stroke-[2.3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Barra de Status em Tempo Real do Cardápio -->
+    <div id="live-status-bar" class="bg-slate-900/90 border-t border-slate-800/80 px-4 py-1 text-[11px] text-slate-400 flex items-center justify-between">
+      <div class="flex items-center gap-1.5 truncate">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse flex-shrink-0"></span>
+        <span id="live-status-text" class="truncate">Cardápio sincronizado ao vivo</span>
+      </div>
+      <span id="header-whatsapp-display" class="text-[10px] text-amber-400 font-bold">WhatsApp: (27) 99713-5078</span>
     </div>
   </header>
 
-  <main class="max-w-xl mx-auto p-4 space-y-4">
-    <h2 class="text-sm font-semibold text-slate-400 tracking-wider uppercase">Escolha a sua marmita</h2>
-
-    <!-- Lista Dinâmica de Marmitas -->
-    <div id="cardapioContainer" class="space-y-3">
-      <p class="text-xs text-slate-500 text-center py-8">Buscando cardápio do dia...</p>
-    </div>
-  </main>
-
-  <!-- Barra de Finalização de Pedido -->
-  <footer id="carrinhoBar" class="fixed bottom-0 left-0 right-0 bg-slate-800 border-t border-slate-700 p-4 hidden">
-    <div class="max-w-xl mx-auto flex items-center justify-between gap-4">
-      <div>
-        <p class="text-xs text-slate-400">Total do Pedido</p>
-        <p id="totalValor" class="text-lg font-bold text-orange-400">R$ 0,00</p>
+  <!-- Menu Lateral do Cliente (Três Traços) -->
+  <div id="client-sidebar-container" class="fixed inset-0 z-50 pointer-events-none transition-all duration-300">
+    <div id="client-sidebar-backdrop" class="fixed inset-0 bg-slate-950/70 backdrop-blur-xs opacity-0 transition-opacity duration-300 pointer-events-none"></div>
+    <aside id="client-sidebar-drawer" class="fixed top-0 right-0 bottom-0 w-76 max-w-[85vw] bg-slate-900 border-l border-slate-800 shadow-2xl flex flex-col transition-transform duration-300 ease-in-out translate-x-full pointer-events-auto z-10 text-white">
+      <div class="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/50">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-600 p-0.5">
+            <img src="/icon.svg" alt="Logo" class="w-full h-full object-cover rounded-[10px] bg-slate-900" />
+          </div>
+          <div>
+            <h3 class="font-bold text-sm text-white">Marmitaria Deggust</h3>
+            <p class="text-[10px] text-slate-400">Cardápio & Pedidos</p>
+          </div>
+        </div>
+        <button id="close-client-sidebar-btn" type="button" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
       </div>
-      <button onclick="enviarWhatsApp()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-5 py-3 rounded-xl transition flex items-center gap-2 shadow-lg shadow-emerald-600/20">
-        <i data-lucide="message-circle"></i> Enviar Pedido
-      </button>
-    </div>
-  </footer>
 
-  <!-- Firebase Integration -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+      <div class="flex-1 p-4 space-y-4 overflow-y-auto">
+        <!-- Convidar com Link -->
+        <div class="space-y-2">
+          <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Indicação & Convite</span>
+          <button 
+            id="btn-sidebar-convidar" 
+            type="button" 
+            class="w-full flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-amber-500/20 to-amber-600/10 hover:from-amber-500/30 hover:to-amber-600/20 text-amber-300 font-bold text-xs border border-amber-500/40 transition-all active:scale-95 cursor-pointer"
+            title="Convidar amigos com link"
+          >
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-400 shrink-0">
+                <i data-lucide="share-2" class="w-4 h-4"></i>
+              </div>
+              <div class="text-left">
+                <span class="block text-white font-bold">Convidar com Link</span>
+                <span class="block text-[10px] font-normal text-amber-300/80">Compartilhar com amigos</span>
+              </div>
+            </div>
+            <i data-lucide="chevron-right" class="w-4 h-4 text-amber-400"></i>
+          </button>
+        </div>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCT-DpI06em24o7cjgV67x2GaHom7BzLpM",
-      authDomain: "marmitaria-deggust.firebaseapp.com",
-      projectId: "marmitaria-deggust",
-      storageBucket: "marmitaria-deggust.firebasestorage.app",
-      messagingSenderId: "750433597063",
-      appId: "1:750433597063:web:b82cabcb8111411cd46a22",
-      measurementId: "G-7CYHMY89YV"
-    };
+        <!-- Instalação do App -->
+        <div class="space-y-2">
+          <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Aplicativo</span>
+          <button 
+            id="btn-install-app" 
+            type="button" 
+            class="w-full flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-xs shadow-md shadow-amber-500/20 transition-all active:scale-95 border border-amber-400/40"
+            title="Instalar na tela de aplicativos"
+          >
+            <div class="flex items-center gap-2">
+              <i data-lucide="download" class="w-4 h-4 stroke-[2.5]"></i>
+              <div class="text-left">
+                <span class="block">Instalar App</span>
+                <span class="block text-[10px] font-normal text-slate-950/80">Acesso rápido no celular</span>
+              </div>
+            </div>
+            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+          </button>
+        </div>
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+        <!-- Acesso Vendedor -->
+        <div class="space-y-2">
+          <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Administração</span>
+          <a 
+            href="/index.html" 
+            class="w-full flex items-center justify-between p-3 rounded-xl bg-slate-800/90 hover:bg-slate-800 text-amber-400 font-semibold text-xs border border-slate-700/80 transition-all"
+            title="Acessar e Instalar o App do Vendedor"
+          >
+            <div class="flex items-center gap-2">
+              <span class="text-base">🔑</span>
+              <div class="text-left">
+                <span class="block font-bold">Área do Vendedor</span>
+                <span class="block text-[10px] font-normal text-slate-400">Gerenciar cardápio e pedidos</span>
+              </div>
+            </div>
+            <i data-lucide="external-link" class="w-4 h-4 text-slate-400"></i>
+          </a>
+        </div>
 
-    let carrinho = {};
+        <!-- Informações de Atendimento -->
+        <div class="p-3 bg-slate-800/50 rounded-xl border border-slate-800 space-y-1.5 text-xs">
+          <div class="text-[10px] font-bold text-amber-400 uppercase tracking-wide">Horário & Pedidos</div>
+          <p class="text-slate-300 text-[11px] leading-relaxed">Segunda a Sábado, das 10h às 14h.</p>
+          <div class="text-slate-400 text-[10px] flex items-center gap-1 pt-1">
+            <i data-lucide="phone" class="w-3 h-3 text-amber-400"></i>
+            <span>WhatsApp: (27) 99713-5078</span>
+          </div>
+        </div>
+      </div>
 
-    lucide.createIcons();
+      <div class="p-4 border-t border-slate-800 bg-slate-950/40 text-center">
+        <p class="text-[10px] text-slate-500">Marmitaria Deggust • Pedidos Online</p>
+      </div>
+    </aside>
+  </div>
 
-    // Sincronizar Cardápio em Tempo Real
-    onSnapshot(collection(db, "cardapio"), (snapshot) => {
-      const container = document.getElementById('cardapioContainer');
-      container.innerHTML = "";
+  <!-- ========================================== -->
+  <!-- CONTAINER PRINCIPAL (MAX-W-MD MOBILE APP)  -->
+  <!-- ========================================== -->
+  <main class="flex-1 max-w-md w-full mx-auto px-4 py-4 space-y-4">
 
-      if (snapshot.empty) {
-        container.innerHTML = `<p class="text-xs text-slate-500 text-center py-8">Nenhum prato disponível no momento.</p>`;
-        return;
-      }
+    <!-- ========================================== -->
+    <!-- ABA 1: CARDÁPIO (PRODUTOS & CATEGORIAS)    -->
+    <!-- ========================================== -->
+    <section id="tab-cardapio" class="tab-pane active space-y-3.5">
+      
+      <!-- Busca rápida -->
+      <div class="relative">
+        <i data-lucide="search" class="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+        <input 
+          id="input-busca-prato" 
+          type="text" 
+          placeholder="Buscar prato, marmita ou bebida..." 
+          class="w-full pl-9 pr-4 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-colors"
+        />
+      </div>
 
-      snapshot.forEach((docItem) => {
-        const prato = docItem.data();
-        const id = docItem.id;
+      <!-- Banner Convidar Amigos com Link -->
+      <div class="p-2.5 sm:p-3 bg-gradient-to-r from-amber-500/15 via-amber-600/10 to-slate-900 border border-amber-500/30 rounded-2xl flex items-center justify-between gap-2.5 shadow-xs">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div class="w-7 h-7 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+            <i data-lucide="gift" class="w-4 h-4"></i>
+          </div>
+          <div class="min-w-0">
+            <p class="text-xs font-bold text-white truncate">Convidar amigos com link</p>
+            <p class="text-[10px] text-slate-400 truncate">Compartilhe o app da MARMITARIA DEGGUST</p>
+          </div>
+        </div>
+        <button 
+          type="button" 
+          id="btn-banner-convidar"
+          class="shrink-0 px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl shadow-xs transition-all active:scale-95 flex items-center gap-1 cursor-pointer"
+          title="Compartilhar cardápio com amigos"
+        >
+          <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
+          <span>Convidar</span>
+        </button>
+      </div>
 
-        const itemEl = document.createElement('div');
-        itemEl.className = "bg-slate-800 border border-slate-700/80 p-4 rounded-2xl flex items-center justify-between gap-4 shadow-md";
-        itemEl.innerHTML = `
-          <div class="flex items-center gap-3">
-            <img src="${prato.imagem}" class="w-16 h-16 rounded-xl object-cover bg-slate-900 border border-slate-700">
-            <div>
-              <h3 class="font-bold text-white text-base">${prato.nome}</h3>
-              <p class="text-xs text-slate-400 line-clamp-2 mt-0.5">${prato.descricao}</p>
-              <p class="text-sm font-bold text-orange-400 mt-1">R$ ${(prato.preco || 0).toFixed(2)}</p>
+      <!-- Filtro por Dia da Semana (Exceto Domingo) -->
+      <div class="space-y-1.5 pt-0.5">
+        <div class="flex items-center justify-between text-[11px]">
+          <span class="font-bold text-slate-200 flex items-center gap-1.5">
+            <i data-lucide="calendar" class="w-3.5 h-3.5 text-amber-400"></i>
+            <span>Cardápio por Dia da Semana:</span>
+          </span>
+          <span class="text-[10px] text-amber-400/90 font-medium bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20">
+            Domingo: Fechado
+          </span>
+        </div>
+        <div class="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none" id="dias-semana-filtro-container">
+          <button type="button" data-dia="todos" class="dia-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-500 text-slate-950 shadow-sm whitespace-nowrap transition-all">
+            Todos os Dias
+          </button>
+          <button type="button" data-dia="segunda" class="dia-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 text-slate-300 border border-slate-800 whitespace-nowrap transition-all">
+            Segunda
+          </button>
+          <button type="button" data-dia="terca" class="dia-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 text-slate-300 border border-slate-800 whitespace-nowrap transition-all">
+            Terça
+          </button>
+          <button type="button" data-dia="quarta" class="dia-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 text-slate-300 border border-slate-800 whitespace-nowrap transition-all">
+            Quarta
+          </button>
+          <button type="button" data-dia="quinta" class="dia-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 text-slate-300 border border-slate-800 whitespace-nowrap transition-all">
+            Quinta
+          </button>
+          <button type="button" data-dia="sexta" class="dia-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 text-slate-300 border border-slate-800 whitespace-nowrap transition-all">
+            Sexta
+          </button>
+          <button type="button" data-dia="sabado" class="dia-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 text-slate-300 border border-slate-800 whitespace-nowrap transition-all">
+            Sábado
+          </button>
+        </div>
+
+        <!-- Banner caso hoje seja Domingo -->
+        <div id="banner-domingo-fechado" class="hidden bg-amber-500/10 border border-amber-500/20 rounded-xl p-2.5 text-[11px] text-amber-300 flex items-center gap-2">
+          <i data-lucide="info" class="w-4 h-4 text-amber-400 shrink-0"></i>
+          <span>Hoje é <strong>domingo</strong> e a Marmitaria Deggust está fechada. Veja abaixo os pratos programados de Segunda a Sábado!</span>
+        </div>
+      </div>
+
+      <!-- Filtro por Categorias -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+        <button class="filter-btn active px-3.5 py-1.5 rounded-xl text-xs font-bold bg-amber-500 text-slate-950 shadow-sm shadow-amber-500/20 whitespace-nowrap transition-all" data-category="todos">
+          Todos os Pratos
+        </button>
+        <button class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 whitespace-nowrap transition-all" data-category="marmita">
+          🍱 Marmitas
+        </button>
+        <button class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 whitespace-nowrap transition-all" data-category="bebida">
+          🥤 Bebidas
+        </button>
+        <button class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 whitespace-nowrap transition-all" data-category="sobremesa">
+          🍮 Sobremesas
+        </button>
+      </div>
+
+      <!-- Lista de Pratos do Cardápio -->
+      <div id="cardapio-items-grid" class="space-y-3">
+        <!-- Skeleton Loader inicial -->
+        <div class="animate-pulse bg-slate-900 rounded-2xl p-3 border border-slate-800 flex gap-3">
+          <div class="w-24 h-24 bg-slate-800 rounded-xl flex-shrink-0"></div>
+          <div class="flex-1 space-y-2 py-1">
+            <div class="h-4 bg-slate-800 rounded w-3/4"></div>
+            <div class="h-3 bg-slate-800 rounded w-full"></div>
+            <div class="h-4 bg-slate-800 rounded w-1/3 pt-2"></div>
+          </div>
+        </div>
+        <div class="animate-pulse bg-slate-900 rounded-2xl p-3 border border-slate-800 flex gap-3">
+          <div class="w-24 h-24 bg-slate-800 rounded-xl flex-shrink-0"></div>
+          <div class="flex-1 space-y-2 py-1">
+            <div class="h-4 bg-slate-800 rounded w-3/4"></div>
+            <div class="h-3 bg-slate-800 rounded w-full"></div>
+            <div class="h-4 bg-slate-800 rounded w-1/3 pt-2"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Banner de Horário & Entrega -->
+      <div class="bg-gradient-to-r from-slate-900 to-slate-900/80 border border-slate-800/90 rounded-2xl p-3.5 flex items-center justify-between gap-3 shadow-sm">
+        <div class="flex items-center gap-2.5">
+          <div class="p-2 rounded-xl bg-amber-500/10 text-amber-400">
+            <i data-lucide="clock" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <p class="text-xs font-bold text-white">Horário de Entrega</p>
+            <p class="text-[11px] text-slate-400">Segunda a Sábado • 11h às 14h</p>
+          </div>
+        </div>
+        <div class="text-right">
+          <span class="text-[10px] text-slate-500 uppercase tracking-wider block">Taxa Fixa</span>
+          <span class="text-xs font-bold text-emerald-400 font-mono">R$ 5,00</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- ABA 2: CARRINHO (CHECKOUT & WHATSAPP)      -->
+    <!-- ========================================== -->
+    <section id="tab-carrinho" class="tab-pane space-y-4">
+      
+      <!-- Cabeçalho do Carrinho -->
+      <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+        <div>
+          <h2 class="text-base font-bold text-white flex items-center gap-2">
+            <i data-lucide="shopping-cart" class="w-4 h-4 text-amber-400"></i>
+            <span>Seu Carrinho</span>
+          </h2>
+          <p class="text-xs text-slate-400">Revise os itens e informe o endereço</p>
+        </div>
+        <button id="btn-esvaziar-carrinho" type="button" class="text-xs text-rose-400 hover:text-rose-300 font-medium">
+          Limpar tudo
+        </button>
+      </div>
+
+      <!-- Lista de Itens do Carrinho -->
+      <div id="carrinho-lista-itens" class="space-y-2.5">
+        <!-- Vazio por padrão -->
+      </div>
+
+      <!-- Formulário de Dados de Entrega -->
+      <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 space-y-3 shadow-md">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+          <i data-lucide="truck" class="w-4 h-4"></i>
+          <span>Dados de Entrega</span>
+        </h3>
+
+        <div class="space-y-2.5">
+          <div>
+            <label for="cliente-nome" class="block text-xs font-medium text-slate-300 mb-1">Seu Nome *</label>
+            <input 
+              id="cliente-nome" 
+              type="text" 
+              placeholder="Ex: João da Silva" 
+              class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-colors"
+            />
+          </div>
+
+          <div>
+            <label for="cliente-telefone" class="block text-xs font-medium text-slate-300 mb-1">Telefone / WhatsApp *</label>
+            <input 
+              id="cliente-telefone" 
+              type="tel" 
+              placeholder="Ex: (27) 99999-9999" 
+              class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-colors"
+            />
+          </div>
+
+          <div>
+            <label for="cliente-endereco" class="block text-xs font-medium text-slate-300 mb-1">Endereço de Entrega *</label>
+            <input 
+              id="cliente-endereco" 
+              type="text" 
+              placeholder="Rua, número e bairro" 
+              class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-colors"
+            />
+          </div>
+
+          <div>
+            <label for="cliente-referencia" class="block text-xs font-medium text-slate-300 mb-1">Ponto de Referência</label>
+            <input 
+              id="cliente-referencia" 
+              type="text" 
+              placeholder="Ex: Em frente ao posto / portão branco" 
+              class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-colors"
+            />
+          </div>
+
+          <!-- Forma de Pagamento -->
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1.5">Forma de Pagamento</label>
+            <div class="grid grid-cols-3 gap-2">
+              <label class="cursor-pointer border border-slate-800 rounded-xl p-2 text-center bg-slate-950 has-[:checked]:border-amber-500 has-[:checked]:bg-amber-500/10 transition-all flex flex-col items-center gap-1">
+                <input type="radio" name="pagamento-metodo" value="PIX" class="hidden" checked>
+                <i data-lucide="qr-code" class="w-4 h-4 text-amber-400"></i>
+                <span class="text-[11px] font-bold text-white">PIX</span>
+              </label>
+              <label class="cursor-pointer border border-slate-800 rounded-xl p-2 text-center bg-slate-950 has-[:checked]:border-amber-500 has-[:checked]:bg-amber-500/10 transition-all flex flex-col items-center gap-1">
+                <input type="radio" name="pagamento-metodo" value="Cartão" class="hidden">
+                <i data-lucide="credit-card" class="w-4 h-4 text-amber-400"></i>
+                <span class="text-[11px] font-bold text-white">Cartão</span>
+              </label>
+              <label class="cursor-pointer border border-slate-800 rounded-xl p-2 text-center bg-slate-950 has-[:checked]:border-amber-500 has-[:checked]:bg-amber-500/10 transition-all flex flex-col items-center gap-1">
+                <input type="radio" name="pagamento-metodo" value="Dinheiro" class="hidden" id="radio-pagamento-dinheiro">
+                <i data-lucide="banknote" class="w-4 h-4 text-amber-400"></i>
+                <span class="text-[11px] font-bold text-white">Dinheiro</span>
+              </label>
             </div>
           </div>
-          <div class="flex items-center gap-2 bg-slate-900 p-1.5 rounded-xl border border-slate-700">
-            <button onclick="alterarQtd('${id}', '${prato.nome}', ${prato.preco}, -1)" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold flex items-center justify-center">-</button>
-            <span id="qtd-${id}" class="text-sm font-bold w-4 text-center">0</span>
-            <button onclick="alterarQtd('${id}', '${prato.nome}', ${prato.preco}, 1)" class="w-7 h-7 rounded-lg bg-orange-600 hover:bg-orange-500 text-white font-bold flex items-center justify-center">+</button>
+
+          <div id="campo-troco-container" class="hidden pt-1">
+            <label for="cliente-troco" class="block text-xs font-medium text-slate-300 mb-1">Troco para quanto?</label>
+            <input 
+              id="cliente-troco" 
+              type="text" 
+              placeholder="Ex: Troco para R$ 50,00 ou Não preciso" 
+              class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-colors"
+            />
           </div>
+
+          <div>
+            <label for="cliente-observacoes" class="block text-xs font-medium text-slate-300 mb-1">Observações do Pedido</label>
+            <textarea 
+              id="cliente-observacoes" 
+              rows="2" 
+              placeholder="Sem cebola, talheres descartáveis, etc." 
+              class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-colors resize-none"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resumo de Valores -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-2">
+        <div class="flex justify-between text-xs text-slate-400">
+          <span>Subtotal dos itens</span>
+          <span id="carrinho-subtotal" class="font-mono text-slate-200">R$ 0,00</span>
+        </div>
+        <div class="flex justify-between text-xs text-slate-400">
+          <span>Taxa de Entrega</span>
+          <span id="carrinho-taxa" class="font-mono text-slate-200">R$ 5,00</span>
+        </div>
+        <div class="flex justify-between text-sm font-bold text-white pt-2 border-t border-slate-800">
+          <span>Total do Pedido</span>
+          <span id="carrinho-total" class="font-mono text-amber-400 text-base">R$ 5,00</span>
+        </div>
+      </div>
+
+      <!-- Botão Finalizar Pedido & Enviar WhatsApp -->
+      <button 
+        id="btn-finalizar-pedido" 
+        type="button" 
+        class="w-full py-3.5 px-4 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-bold rounded-2xl shadow-lg shadow-emerald-600/25 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+      >
+        <i data-lucide="send" class="w-5 h-5"></i>
+        <span class="text-sm">Finalizar Pedido & Enviar no WhatsApp</span>
+      </button>
+
+      <p class="text-[11px] text-center text-slate-500">
+        O pedido gera um link de conexão único copiado e enviado automaticamente para a Deggust.
+      </p>
+
+    </section>
+
+    <!-- ========================================== -->
+    <!-- ABA 3: MEUS PEDIDOS (HISTÓRICO & STATUS)   -->
+    <!-- ========================================== -->
+    <section id="tab-pedidos" class="tab-pane space-y-4">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+        <div>
+          <h2 class="text-base font-bold text-white flex items-center gap-2">
+            <i data-lucide="clipboard-list" class="w-4 h-4 text-amber-400"></i>
+            <span>Meus Pedidos</span>
+          </h2>
+          <p class="text-xs text-slate-400">Acompanhe seus pedidos recentes e links de conexão</p>
+        </div>
+        <span id="pedidos-contador-badge" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-800 text-slate-300">
+          0 pedidos
+        </span>
+      </div>
+
+      <div id="historico-pedidos-lista" class="space-y-3">
+        <!-- Itens inseridos dinamicamente -->
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- ABA 4: PERFIL / AJUDA (SUPORTE & INFO)     -->
+    <!-- ========================================== -->
+    <section id="tab-perfil" class="tab-pane space-y-4">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+        <div>
+          <h2 class="text-base font-bold text-white flex items-center gap-2">
+            <i data-lucide="user" class="w-4 h-4 text-amber-400"></i>
+            <span>Perfil & Ajuda</span>
+          </h2>
+          <p class="text-xs text-slate-400">Informações da marmitaria e seus dados salvos</p>
+        </div>
+      </div>
+
+      <!-- Card Meus Dados Pré-Salvos -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
+        <div class="flex items-center justify-between">
+          <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
+            <i data-lucide="user-check" class="w-4 h-4 text-amber-400"></i>
+            <span>Seus Dados Rápidos</span>
+          </h3>
+          <span class="text-[10px] text-slate-500">Salvos neste dispositivo</span>
+        </div>
+        <div class="space-y-2 text-xs">
+          <div>
+            <label class="text-[10px] text-slate-400 block">Nome:</label>
+            <input id="perfil-nome" type="text" placeholder="Informe seu nome" class="w-full px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-xs text-white">
+          </div>
+          <div>
+            <label class="text-[10px] text-slate-400 block">WhatsApp:</label>
+            <input id="perfil-telefone" type="tel" placeholder="(27) 99999-9999" class="w-full px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-xs text-white">
+          </div>
+          <div>
+            <label class="text-[10px] text-slate-400 block">Endereço Padrão:</label>
+            <input id="perfil-endereco" type="text" placeholder="Rua, número e bairro" class="w-full px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-xs text-white">
+          </div>
+          <button id="btn-salvar-perfil" type="button" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold rounded-xl text-xs transition-colors">
+            Salvar Meus Dados
+          </button>
+        </div>
+      </div>
+
+      <!-- Card Convidar Amigos com Link -->
+      <div class="bg-gradient-to-br from-amber-500/15 via-slate-900 to-slate-900 border border-amber-500/30 rounded-2xl p-4 space-y-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+            <i data-lucide="share-2" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-xs font-bold text-white">Convidar com Link</h3>
+            <p class="text-[11px] text-slate-400">Indique o cardápio da MARMITARIA DEGGUST para amigos e família!</p>
+          </div>
+        </div>
+        <button 
+          id="btn-perfil-convidar" 
+          type="button" 
+          class="w-full py-2.5 px-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-all active:scale-95 shadow-md shadow-amber-500/20 cursor-pointer"
+        >
+          <i data-lucide="link" class="w-4 h-4"></i>
+          <span>Convidar com Link Agora</span>
+        </button>
+      </div>
+
+      <!-- Card Deggust Informações -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
+        <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
+          <i data-lucide="store" class="w-4 h-4 text-amber-400"></i>
+          <span>Marmitaria Deggust</span>
+        </h3>
+        <ul class="text-xs text-slate-300 space-y-2">
+          <li class="flex items-start gap-2">
+            <i data-lucide="phone" class="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5"></i>
+            <span>(27) 99713-5078</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <i data-lucide="clock" class="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5"></i>
+            <span>Segunda a Sábado das 11:00 às 14:00 (Domingo Fechado)</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <i data-lucide="badge-check" class="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5"></i>
+            <span>Formas de Pagamento: PIX, Cartão e Dinheiro</span>
+          </li>
+        </ul>
+
+        <!-- Botão Suporte WhatsApp -->
+        <a 
+          id="support-whatsapp-link"
+          href="https://wa.me/5527997135078?text=Ol%C3%A1%2C%20gostaria%20de%20tirar%20uma%20d%C3%BAvida%20sobre%20o%20card%C3%A1pio%20da%20Marmitaria%20Deggust." 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          class="w-full py-2.5 px-4 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-colors"
+        >
+          <i data-lucide="message-circle" class="w-4 h-4"></i>
+          <span id="support-whatsapp-text">Falar com Atendimento no WhatsApp (27 99713-5078)</span>
+        </a>
+      </div>
+
+      <!-- Card PWA & Instalação -->
+      <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 space-y-2 text-xs">
+        <h3 class="font-bold text-white flex items-center gap-1.5">
+          <i data-lucide="smartphone" class="w-4 h-4 text-amber-400"></i>
+          <span>Aplicativo PWA Deggust</span>
+        </h3>
+        <p class="text-slate-400 text-[11px] leading-relaxed">
+          Instale este aplicativo diretamente na tela de apps do seu celular para fazer pedidos rápidos sem precisar abrir o navegador.
+        </p>
+        <button id="btn-install-app-secondary" type="button" class="mt-2 w-full py-2 bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/40 rounded-xl font-bold text-xs transition-colors flex items-center justify-center gap-1.5">
+          <i data-lucide="download" class="w-4 h-4"></i>
+          <span>Instalar Aplicativo Agora</span>
+        </button>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ========================================== -->
+  <!-- BARRA DE NAVEGAÇÃO INFERIOR FIXA (BOTTOM NAV)-->
+  <!-- ========================================== -->
+  <nav class="fixed bottom-0 inset-x-0 z-50 bg-slate-950/95 backdrop-blur-xl border-t border-slate-800 max-w-md mx-auto pb-safe">
+    <div class="grid grid-cols-4 h-16 items-center px-1">
+      
+      <!-- 1. Cardápio -->
+      <button 
+        type="button" 
+        class="nav-tab-btn flex flex-col items-center justify-center h-full text-amber-400 transition-colors" 
+        data-target="tab-cardapio"
+      >
+        <div class="relative">
+          <i data-lucide="utensils-crossed" class="w-5 h-5"></i>
+        </div>
+        <span class="text-[10px] font-bold mt-1">Cardápio</span>
+      </button>
+
+      <!-- 2. Carrinho -->
+      <button 
+        type="button" 
+        class="nav-tab-btn flex flex-col items-center justify-center h-full text-slate-400 hover:text-slate-200 transition-colors" 
+        data-target="tab-carrinho"
+      >
+        <div class="relative">
+          <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+          <span id="nav-cart-badge" class="hidden absolute -top-1.5 -right-2.5 px-1.5 py-0.2 rounded-full text-[9px] font-extrabold bg-amber-500 text-slate-950">
+            0
+          </span>
+        </div>
+        <span class="text-[10px] font-medium mt-1">Carrinho</span>
+      </button>
+
+      <!-- 3. Meus Pedidos -->
+      <button 
+        type="button" 
+        class="nav-tab-btn flex flex-col items-center justify-center h-full text-slate-400 hover:text-slate-200 transition-colors" 
+        data-target="tab-pedidos"
+      >
+        <div class="relative">
+          <i data-lucide="clipboard-list" class="w-5 h-5"></i>
+        </div>
+        <span class="text-[10px] font-medium mt-1">Pedidos</span>
+      </button>
+
+      <!-- 4. Perfil / Ajuda -->
+      <button 
+        type="button" 
+        class="nav-tab-btn flex flex-col items-center justify-center h-full text-slate-400 hover:text-slate-200 transition-colors" 
+        data-target="tab-perfil"
+      >
+        <div class="relative">
+          <i data-lucide="user" class="w-5 h-5"></i>
+        </div>
+        <span class="text-[10px] font-medium mt-1">Perfil</span>
+      </button>
+
+    </div>
+  </nav>
+
+  <!-- ========================================== -->
+  <!-- MODAL DE SUCESSO DO PEDIDO (MARMITARIA DEGGUST) -->
+  <!-- ========================================== -->
+  <div id="modal-pedido-sucesso" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-sm w-full p-5 space-y-4 shadow-2xl text-center transform scale-95 transition-transform duration-300">
+      
+      <div class="w-14 h-14 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/10">
+        <i data-lucide="check" class="w-8 h-8 stroke-[3]"></i>
+      </div>
+
+      <div>
+        <h3 class="text-lg font-bold text-white">Pedido Realizado!</h3>
+        <p class="text-xs text-slate-400 mt-1">Seu pedido foi registrado com sucesso para a <strong class="text-amber-400 font-semibold">MARMITARIA DEGGUST</strong>.</p>
+      </div>
+
+      <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-left space-y-1.5">
+        <div class="flex items-center justify-between text-[11px]">
+          <span class="text-slate-400 font-medium">Código do Pedido:</span>
+          <span id="modal-pedido-id" class="font-mono font-bold text-amber-400">#DEG-000</span>
+        </div>
+        <div class="flex items-center justify-between text-[11px]">
+          <span class="text-slate-400 font-medium">Estabelecimento:</span>
+          <span class="font-bold text-slate-200">MARMITARIA DEGGUST</span>
+        </div>
+        <div class="flex items-center justify-between text-[11px]">
+          <span class="text-slate-400 font-medium">Status:</span>
+          <span class="text-emerald-400 font-semibold flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            Aguardando Envio WhatsApp
+          </span>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <button 
+          id="btn-abrir-whatsapp-modal" 
+          type="button" 
+          class="w-full py-3 px-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-all active:scale-95 shadow-md shadow-emerald-500/20 cursor-pointer"
+        >
+          <i data-lucide="send" class="w-4 h-4"></i>
+          <span>Enviar Mensagem no WhatsApp Agora</span>
+        </button>
+
+        <button 
+          id="btn-fechar-modal-sucesso" 
+          type="button" 
+          class="w-full py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold rounded-xl text-xs transition-colors cursor-pointer"
+        >
+          Ver Meus Pedidos
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL CONVIDAR COM LINK (MARMITARIA DEGGUST)-->
+  <!-- ========================================== -->
+  <div id="modal-convidar" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-sm w-full p-5 space-y-4 shadow-2xl text-center transform scale-95 transition-transform duration-300">
+      
+      <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-500 to-amber-600 text-slate-950 flex items-center justify-center mx-auto shadow-lg shadow-amber-500/20">
+        <i data-lucide="share-2" class="w-7 h-7 stroke-[2.5]"></i>
+      </div>
+
+      <div>
+        <h3 class="text-lg font-bold text-white">Convidar com Link</h3>
+        <p class="text-xs text-slate-400 mt-1 leading-relaxed">
+          Compartilhe o cardápio da <strong class="text-amber-400 font-semibold">MARMITARIA DEGGUST</strong> para amigos e familiares fazerem pedidos com rapidez!
+        </p>
+      </div>
+
+      <!-- Caixa com o link -->
+      <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-left space-y-2">
+        <span class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider block">Link do Cardápio:</span>
+        <div class="flex items-center gap-2">
+          <input 
+            id="input-link-convite" 
+            type="text" 
+            readonly 
+            class="flex-1 bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-amber-300 font-mono select-all focus:outline-none"
+          />
+          <button 
+            id="btn-copiar-link-convite" 
+            type="button" 
+            class="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-lg transition-colors flex items-center gap-1 shrink-0 cursor-pointer"
+          >
+            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+            <span id="label-copiar-link-convite">Copiar</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Ações de Compartilhamento -->
+      <div class="space-y-2 pt-1">
+        <button 
+          id="btn-compartilhar-whatsapp" 
+          type="button" 
+          class="w-full py-3 px-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-all active:scale-95 shadow-md shadow-emerald-500/20 cursor-pointer"
+        >
+          <i data-lucide="message-circle" class="w-4 h-4"></i>
+          <span>Enviar Convite pelo WhatsApp</span>
+        </button>
+
+        <button 
+          id="btn-compartilhar-nativo" 
+          type="button" 
+          class="w-full py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
+        >
+          <i data-lucide="share" class="w-4 h-4"></i>
+          <span>Compartilhar (Outros Aplicativos)</span>
+        </button>
+
+        <button 
+          id="btn-fechar-modal-convidar" 
+          type="button" 
+          class="w-full py-2 px-4 text-slate-400 hover:text-white font-medium text-xs transition-colors cursor-pointer"
+        >
+          Fechar
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast-app" class="fixed top-5 right-5 z-50 transform -translate-y-20 opacity-0 transition-all duration-300 max-w-xs w-full bg-slate-900 border border-slate-700 text-white px-3.5 py-2.5 rounded-xl shadow-2xl flex items-center gap-2.5">
+    <div id="toast-icon-wrapper" class="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center flex-shrink-0">
+      <i data-lucide="check" class="w-3.5 h-3.5"></i>
+    </div>
+    <div class="flex-1 min-w-0">
+      <p id="toast-titulo" class="text-xs font-bold text-white truncate">Sucesso</p>
+      <p id="toast-descricao" class="text-[11px] text-slate-300 truncate">Ação realizada.</p>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 2. SERVICE WORKER REGISTRATION (BLOB PWA)  -->
+  <!-- ========================================== -->
+  <script>
+    (function registerPWA() {
+      if ('serviceWorker' in navigator) {
+        const swCode = `
+          const CACHE_NAME = 'deggust-app-v2';
+          self.addEventListener('install', (e) => { self.skipWaiting(); });
+          self.addEventListener('activate', (e) => { e.waitUntil(self.clients.claim()); });
+          self.addEventListener('fetch', (e) => {
+            e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+          });
         `;
-        container.appendChild(itemEl);
+        const blob = new Blob([swCode], { type: 'application/javascript' });
+        const swUrl = URL.createObjectURL(blob);
+
+        navigator.serviceWorker.register('/sw.js').catch(() => {
+          return navigator.serviceWorker.register(swUrl);
+        }).then((reg) => {
+          console.log('[PWA] Service Worker registrado:', reg.scope);
+        }).catch((err) => {
+          console.warn('[PWA] Service Worker fallback:', err);
+        });
+      }
+    })();
+  </script>
+
+  <!-- ========================================== -->
+  <!-- 3. INTERCEPTAÇÃO DO BEFOREINSTALLPROMPT    -->
+  <!-- ========================================== -->
+  <script>
+    // Registro do Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js', { scope: '/' })
+          .then(r => console.log('[PWA Cliente] Service Worker ativo:', r.scope))
+          .catch(e => console.warn('[PWA Cliente] Falha no Service Worker:', e));
       });
-      lucide.createIcons();
+    }
+
+    let deferredPrompt = null;
+    const btnInstallApp = document.getElementById('btn-install-app');
+    const btnInstallSecondary = document.getElementById('btn-install-app-secondary');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      // Impede o banner padrão do navegador
+      e.preventDefault();
+      deferredPrompt = e;
+      
+      // Destaca os botões de instalação
+      if (btnInstallApp) {
+        btnInstallApp.classList.add('animate-pulse');
+      }
+      console.log('[PWA] beforeinstallprompt capturado com sucesso.');
     });
 
-    window.alterarQtd = (id, nome, preco, delta) => {
-      if (!carrinho[id]) carrinho[id] = { nome, preco, qtd: 0 };
-      carrinho[id].qtd += delta;
+    async function handleInstallApp() {
+      if (window.self !== window.top) {
+        window.open(window.location.origin + "/cliente.html?instalar=1", "_blank");
+        return;
+      }
+      if (!deferredPrompt) return;
+      try {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === "accepted" && btnInstallApp) {
+          btnInstallApp.innerHTML = "<i data-lucide="check" class="w-3.5 h-3.5"></i><span>Instalado!</span>";
+          btnInstallApp.classList.remove("animate-pulse");
+        }
+      } catch (err) {
+        console.warn("Install error:", err);
+      }
+      deferredPrompt = null;
+    }
+    const _urlParams = new URLSearchParams(window.location.search);
+    if (_urlParams.get("instalar") === "1") {
+      window.history.replaceState({}, document.title, window.location.pathname);
+      setTimeout(() => { if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; } }, 600);
+    }
 
-      if (carrinho[id].qtd <= 0) delete carrinho[id];
+    if (btnInstallApp) btnInstallApp.addEventListener('click', handleInstallApp);
+    if (btnInstallSecondary) btnInstallSecondary.addEventListener('click', handleInstallApp);
 
-      document.getElementById(`qtd-${id}`).innerText = carrinho[id] ? carrinho[id].qtd : 0;
-      atualizarCarrinho();
+    window.addEventListener('appinstalled', () => {
+      console.log('[PWA] Aplicativo instalado com sucesso.');
+      if (btnInstallApp) {
+        btnInstallApp.innerHTML = '<i data-lucide="check" class="w-3.5 h-3.5"></i><span>Instalado</span>';
+      }
+    });
+
+    // Controle do Menu Lateral do Cliente (Três Traços)
+    const btnClientMenu = document.getElementById('btn-client-menu');
+    const closeClientSidebarBtn = document.getElementById('close-client-sidebar-btn');
+    const clientSidebarContainer = document.getElementById('client-sidebar-container');
+    const clientSidebarBackdrop = document.getElementById('client-sidebar-backdrop');
+    const clientSidebarDrawer = document.getElementById('client-sidebar-drawer');
+
+    function openClientSidebar() {
+      clientSidebarContainer?.classList.remove('pointer-events-none');
+      clientSidebarBackdrop?.classList.remove('opacity-0', 'pointer-events-none');
+      clientSidebarDrawer?.classList.remove('translate-x-full');
+      document.body.classList.add('overflow-hidden');
+    }
+
+    function closeClientSidebar() {
+      clientSidebarDrawer?.classList.add('translate-x-full');
+      clientSidebarBackdrop?.classList.add('opacity-0', 'pointer-events-none');
+      document.body.classList.remove('overflow-hidden');
+      setTimeout(() => {
+        clientSidebarContainer?.classList.add('pointer-events-none');
+      }, 300);
+    }
+
+    btnClientMenu?.addEventListener('click', openClientSidebar);
+    closeClientSidebarBtn?.addEventListener('click', closeClientSidebar);
+    clientSidebarBackdrop?.addEventListener('click', closeClientSidebar);
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !clientSidebarDrawer?.classList.contains('translate-x-full')) {
+        closeClientSidebar();
+      }
+    });
+  </script>
+
+  <!-- ========================================== -->
+  <!-- 4. FIREBASE SDK v9+ & LÓGICA DO CLIENTE    -->
+  <!-- ========================================== -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { 
+      getFirestore, 
+      collection, 
+      onSnapshot, 
+      addDoc, 
+      serverTimestamp,
+      doc 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // Configuração oficial do Firebase
+    const firebaseConfig = {
+      projectId: "affable-dynamo-h9v0l",
+      appId: "1:102554243224:web:fb15cc14de2576f83cc0ed",
+      apiKey: "AIzaSyA2X3DYTJVOK82X-zOsm2WovM7dDfbQL-Q",
+      authDomain: "affable-dynamo-h9v0l.firebaseapp.com",
+      firestoreDatabaseId: "ai-studio-marmitariadeggus-ab1cdc5d-2937-4881-bbdf-6c56c0a4597f",
+      storageBucket: "affable-dynamo-h9v0l.firebasestorage.app",
+      messagingSenderId: "102554243224"
     };
 
-    function atualizarCarrinho() {
-      let total = 0;
-      let qtdTotal = 0;
+    let app, db;
+    try {
+      app = initializeApp(firebaseConfig);
+      db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+    } catch (e) {
+      console.warn("[Firebase] Inicialização com fallback:", e);
+    }
 
-      Object.values(carrinho).forEach(item => {
-        total += item.preco * item.qtd;
-        qtdTotal += item.qtd;
-      });
+    // Constantes e Estado
+    const DEFAULT_WHATSAPP_NUMERO = "5527997135078";
+    const DEFAULT_WHATSAPP_FORMATADO = "(27) 99713-5078";
+    let currentWhatsAppNumero = DEFAULT_WHATSAPP_NUMERO;
+    let currentWhatsAppFormatado = DEFAULT_WHATSAPP_FORMATADO;
+    const TAXA_ENTREGA = 5.00;
 
-      const bar = document.getElementById('carrinhoBar');
-      if (qtdTotal > 0) {
-        bar.classList.remove('hidden');
-        document.getElementById('totalValor').innerText = `R$ ${total.toFixed(2)}`;
-      } else {
-        bar.classList.add('hidden');
+    const DIAS_CONFIG = [
+      { id: 'segunda', label: 'Segunda', abrev: 'Seg' },
+      { id: 'terca', label: 'Terça', abrev: 'Ter' },
+      { id: 'quarta', label: 'Quarta', abrev: 'Qua' },
+      { id: 'quinta', label: 'Quinta', abrev: 'Qui' },
+      { id: 'sexta', label: 'Sexta', abrev: 'Sex' },
+      { id: 'sabado', label: 'Sábado', abrev: 'Sáb' }
+    ];
+
+    const DIAS_ABREV = {
+      segunda: 'Seg',
+      terca: 'Ter',
+      quarta: 'Qua',
+      quinta: 'Qui',
+      sexta: 'Sex',
+      sabado: 'Sáb'
+    };
+
+    let cardapio = [];
+    let categoriaAtiva = 'todos';
+    let diaSemanaAtivo = 'todos';
+    let buscaTexto = '';
+    let carrinho = [];
+    let pedidosHistorico = [];
+    let ultimoLinkWhatsApp = '';
+
+    // Carrega dados locais (carrinho, histórico e perfil)
+    try {
+      const c = localStorage.getItem('deggust_carrinho');
+      if (c) carrinho = JSON.parse(c);
+      const p = localStorage.getItem('deggust_pedidos');
+      if (p) pedidosHistorico = JSON.parse(p);
+    } catch (e) {
+      carrinho = [];
+      pedidosHistorico = [];
+    }
+
+    // Pratos de demonstração organizados por dias da semana (exceto domingo)
+    const pratosFallback = [
+      {
+        id: "demo-1",
+        nome: "Marmita Executiva de Carne Assada",
+        descricao: "Carne bovina macia ao molho ferrugem, arroz branco soltinho, feijão carioquinha temperado, farofa crocante e salada fresca.",
+        preco: 22.00,
+        categoria: "marmita",
+        disponivel: true,
+        tamanho: "Média (650g)",
+        diasSemana: ["segunda", "terca", "quarta", "quinta", "sexta"],
+        imagem: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        id: "demo-2",
+        nome: "Feijoada Completa Tradicional",
+        descricao: "Feijão preto com carnes defumadas nobres, couve refogada no alho, bisteca suína grelhada, arroz branco e rodelas de laranja.",
+        preco: 26.00,
+        categoria: "marmita",
+        disponivel: true,
+        tamanho: "Grande (800g)",
+        diasSemana: ["quarta", "sabado"],
+        imagem: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        id: "demo-3",
+        nome: "Filé de Frango Grelhado com Legumes",
+        descricao: "Peito de frango temperado com ervas naturais, arroz integral, feijão caseiro e mix de legumes cozidos no vapor.",
+        preco: 20.00,
+        categoria: "marmita",
+        disponivel: true,
+        tamanho: "Fitness (500g)",
+        diasSemana: ["segunda", "terca", "quarta", "quinta", "sexta"],
+        imagem: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        id: "demo-4",
+        nome: "Refrigerante Coca-Cola Lata 350ml",
+        descricao: "Coca-Cola bem gelada para acompanhar sua refeição.",
+        preco: 6.00,
+        categoria: "bebida",
+        disponivel: true,
+        tamanho: "350ml",
+        diasSemana: ["segunda", "terca", "quarta", "quinta", "sexta", "sabado"],
+        imagem: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        id: "demo-5",
+        nome: "Suco Natural de Laranja 500ml",
+        descricao: "Suco 100% natural espremido na hora, rico em vitamina C e super refrescante.",
+        preco: 8.00,
+        categoria: "bebida",
+        disponivel: true,
+        tamanho: "500ml",
+        diasSemana: ["segunda", "terca", "quarta", "quinta", "sexta", "sabado"],
+        imagem: "https://images.unsplash.com/photo-1613478223719-2ab802602423?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        id: "demo-6",
+        nome: "Pudim de Leite Condensado Artesanal",
+        descricao: "Fatia generosa e aveludada com calda dourada de caramelo.",
+        preco: 7.00,
+        categoria: "sobremesa",
+        disponivel: true,
+        tamanho: "120g",
+        diasSemana: ["segunda", "terca", "quarta", "quinta", "sexta", "sabado"],
+        imagem: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=600&q=80"
+      }
+    ];
+
+    // ELEMENTOS DOM
+    const cardapioGrid = document.getElementById('cardapio-items-grid');
+    const inputBusca = document.getElementById('input-busca-prato');
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const navTabBtns = document.querySelectorAll('.nav-tab-btn');
+    const tabPanes = document.querySelectorAll('.tab-pane');
+    const navCartBadge = document.getElementById('nav-cart-badge');
+    const liveStatusText = document.getElementById('live-status-text');
+
+    const carrinhoLista = document.getElementById('carrinho-lista-itens');
+    const carrinhoSubtotal = document.getElementById('carrinho-subtotal');
+    const carrinhoTaxa = document.getElementById('carrinho-taxa');
+    const carrinhoTotal = document.getElementById('carrinho-total');
+    const btnEsvaziarCarrinho = document.getElementById('btn-esvaziar-carrinho');
+    const btnFinalizarPedido = document.getElementById('btn-finalizar-pedido');
+
+    const radioDinheiro = document.getElementById('radio-pagamento-dinheiro');
+    const campoTrocoContainer = document.getElementById('campo-troco-container');
+    const radiosPagamento = document.querySelectorAll('input[name="pagamento-metodo"]');
+
+    const historicoPedidosLista = document.getElementById('historico-pedidos-lista');
+    const pedidosContadorBadge = document.getElementById('pedidos-contador-badge');
+
+    const modalSucesso = document.getElementById('modal-pedido-sucesso');
+    const modalPedidoId = document.getElementById('modal-pedido-id');
+    const modalPedidoLink = document.getElementById('modal-pedido-link');
+    const btnAbrirWhatsAppModal = document.getElementById('btn-abrir-whatsapp-modal');
+    const btnFecharModalSucesso = document.getElementById('btn-fechar-modal-sucesso');
+
+    const perfilNome = document.getElementById('perfil-nome');
+    const perfilTelefone = document.getElementById('perfil-telefone');
+    const perfilEndereco = document.getElementById('perfil-endereco');
+    const btnSalvarPerfil = document.getElementById('btn-salvar-perfil');
+
+    const clienteNome = document.getElementById('cliente-nome');
+    const clienteTelefone = document.getElementById('cliente-telefone');
+    const clienteEndereco = document.getElementById('cliente-endereco');
+    const clienteReferencia = document.getElementById('cliente-referencia');
+    const clienteTroco = document.getElementById('cliente-troco');
+    const clienteObservacoes = document.getElementById('cliente-observacoes');
+
+    // ----------------------------------------------------
+    // INICIALIZAÇÃO DE PERFIL / CAMPOS SALVOS
+    // ----------------------------------------------------
+    function carregarDadosPerfil() {
+      try {
+        const p = JSON.parse(localStorage.getItem('deggust_perfil') || '{}');
+        if (p.nome) {
+          perfilNome.value = p.nome;
+          clienteNome.value = p.nome;
+        }
+        if (p.telefone) {
+          perfilTelefone.value = p.telefone;
+          clienteTelefone.value = p.telefone;
+        }
+        if (p.endereco) {
+          perfilEndereco.value = p.endereco;
+          clienteEndereco.value = p.endereco;
+        }
+      } catch (e) {
+        console.warn(e);
       }
     }
 
-    window.enviarWhatsApp = () => {
-      let msg = "*NOVO PEDIDO - MARMITARIA DEGGUST*\n\n";
-      let total = 0;
+    btnSalvarPerfil?.addEventListener('click', () => {
+      const p = {
+        nome: perfilNome.value.trim(),
+        telefone: perfilTelefone.value.trim(),
+        endereco: perfilEndereco.value.trim()
+      };
+      localStorage.setItem('deggust_perfil', JSON.stringify(p));
+      clienteNome.value = p.nome;
+      clienteTelefone.value = p.telefone;
+      clienteEndereco.value = p.endereco;
+      showToast('Perfil Salvo', 'Seus dados foram atualizados com sucesso!', 'success');
+    });
 
-      Object.values(carrinho).forEach(item => {
-        msg += `• ${item.qtd}x ${item.nome} - R$ ${(item.preco * item.qtd).toFixed(2)}\n`;
-        total += item.preco * item.qtd;
+    // ----------------------------------------------------
+    // BOTTOM NAVIGATION (TROCA DE ABAS)
+    // ----------------------------------------------------
+    function switchTab(targetTabId) {
+      tabPanes.forEach(pane => {
+        if (pane.id === targetTabId) {
+          pane.classList.add('active');
+        } else {
+          pane.classList.remove('active');
+        }
       });
 
-      msg += `\n*Total: R$ ${total.toFixed(2)}*`;
+      navTabBtns.forEach(btn => {
+        if (btn.getAttribute('data-target') === targetTabId) {
+          btn.classList.add('text-amber-400');
+          btn.classList.remove('text-slate-400');
+          const span = btn.querySelector('span');
+          if (span) {
+            span.classList.add('font-bold');
+            span.classList.remove('font-medium');
+          }
+        } else {
+          btn.classList.remove('text-amber-400');
+          btn.classList.add('text-slate-400');
+          const span = btn.querySelector('span');
+          if (span) {
+            span.classList.remove('font-bold');
+            span.classList.add('font-medium');
+          }
+        }
+      });
 
-      const numeroWhatsApp = "5527999503904";
-      window.open(`https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(msg)}`, '_blank');
-    };
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      if (targetTabId === 'tab-pedidos') {
+        renderHistoricoPedidos();
+      }
+      if (window.lucide) lucide.createIcons();
+    }
+
+    navTabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.getAttribute('data-target');
+        if (target) switchTab(target);
+      });
+    });
+
+    // ----------------------------------------------------
+    // ESCUTA EM TEMPO REAL NO FIRESTORE (onSnapshot)
+    // ----------------------------------------------------
+    function listenToFirestoreCardapio() {
+      if (!db) {
+        cardapio = pratosFallback;
+        renderCardapio();
+        return;
+      }
+
+      try {
+        const colRef = collection(db, "cardapio");
+        onSnapshot(colRef, (snapshot) => {
+          if (!snapshot.empty) {
+            const list = [];
+            snapshot.forEach(docSnap => {
+              const d = docSnap.data();
+              list.push({
+                id: docSnap.id,
+                nome: d.nome || "Prato Deggust",
+                descricao: d.descricao || "",
+                preco: Number(d.preco) || 0,
+                categoria: (d.categoria || "marmita").toLowerCase(),
+                disponivel: d.disponivel !== false,
+                tamanho: d.tamanho || "",
+                diasSemana: Array.isArray(d.diasSemana) ? d.diasSemana : [],
+                imagem: d.imagem || d.foto || "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80"
+              });
+            });
+            cardapio = list;
+            if (liveStatusText) {
+              liveStatusText.textContent = `Cardápio sincronizado ao vivo (${list.length} itens)`;
+            }
+          } else {
+            cardapio = pratosFallback;
+            if (liveStatusText) {
+              liveStatusText.textContent = "Cardápio ao vivo conectado";
+            }
+          }
+          renderCardapio();
+        }, (err) => {
+          console.warn("[Firestore] Erro na sincronização, utilizando fallback:", err);
+          cardapio = pratosFallback;
+          renderCardapio();
+        });
+      } catch (err) {
+        console.warn(err);
+        cardapio = pratosFallback;
+        renderCardapio();
+      }
+    }
+
+    // ----------------------------------------------------
+    // RENDERIZAÇÃO DO CARDÁPIO
+    // ----------------------------------------------------
+    function renderCardapio() {
+      if (!cardapioGrid) return;
+
+      const filtrados = cardapio.filter(item => {
+        const matchCategoria = (categoriaAtiva === 'todos') || (item.categoria === categoriaAtiva);
+        const matchBusca = !buscaTexto || 
+          item.nome.toLowerCase().includes(buscaTexto.toLowerCase()) || 
+          (item.descricao && item.descricao.toLowerCase().includes(buscaTexto.toLowerCase()));
+        const matchDia = (diaSemanaAtivo === 'todos') ||
+          (!item.diasSemana || !Array.isArray(item.diasSemana) || item.diasSemana.length === 0 || item.diasSemana.includes(diaSemanaAtivo));
+        return matchCategoria && matchBusca && matchDia;
+      });
+
+      if (filtrados.length === 0) {
+        cardapioGrid.innerHTML = `
+          <div class="text-center py-10 px-4 bg-slate-900/60 rounded-2xl border border-slate-800">
+            <i data-lucide="utensils-crossed" class="w-8 h-8 text-slate-600 mx-auto mb-2"></i>
+            <p class="text-xs font-bold text-slate-300">Nenhum prato disponível para este dia ou filtro</p>
+            <p class="text-[11px] text-slate-500 mt-1">Experimente clicar em "Todos os Dias" ou selecionar outra categoria.</p>
+          </div>
+        `;
+        if (window.lucide) lucide.createIcons();
+        return;
+      }
+
+      cardapioGrid.innerHTML = filtrados.map(item => {
+        const precoBRL = Number(item.preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        const disponivel = item.disponivel !== false;
+
+        const diasArr = Array.isArray(item.diasSemana) && item.diasSemana.length > 0 
+          ? item.diasSemana 
+          : ['segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado'];
+        const diasTexto = diasArr.length === 6 ? 'Seg a Sáb' : diasArr.map(d => DIAS_ABREV[d] || d).join(', ');
+
+        return `
+          <div class="bg-slate-900 border border-slate-800/80 rounded-2xl p-3 flex gap-3 hover:border-slate-700 transition-all shadow-sm group">
+            
+            <!-- Imagem do Prato -->
+            <div class="relative w-24 h-24 rounded-xl overflow-hidden bg-slate-950 flex-shrink-0">
+              <img 
+                src="${item.imagem}" 
+                alt="${item.nome}" 
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ${!disponivel ? 'grayscale opacity-50' : ''}"
+                loading="lazy"
+                onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80';"
+              />
+              ${!disponivel ? `
+                <div class="absolute inset-0 bg-slate-950/80 flex items-center justify-center p-1 text-center">
+                  <span class="text-[9px] font-bold uppercase text-rose-400">Esgotado</span>
+                </div>
+              ` : ''}
+            </div>
+
+            <!-- Dados e Adicionar -->
+            <div class="flex-1 flex flex-col justify-between min-w-0">
+              <div>
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <span class="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                    ${item.categoria}
+                  </span>
+                  ${item.tamanho ? `
+                    <span class="text-[9px] text-slate-400 font-medium">${item.tamanho}</span>
+                  ` : ''}
+                  <span class="text-[9px] font-medium text-amber-300/90 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 flex items-center gap-1">
+                    📅 ${diasTexto}
+                  </span>
+                </div>
+                <h3 class="text-xs font-bold text-white mt-1 leading-tight group-hover:text-amber-400 transition-colors line-clamp-1">
+                  ${item.nome}
+                </h3>
+                <p class="text-[11px] text-slate-400 line-clamp-2 mt-0.5 leading-snug">
+                  ${item.descricao || 'Feito com ingredientes selecionados e tempero caseiro.'}
+                </p>
+              </div>
+
+              <div class="flex items-center justify-between pt-2 border-t border-slate-800/60 mt-2">
+                <span class="text-xs font-extrabold text-amber-400 font-mono">${precoBRL}</span>
+
+                <button 
+                  type="button" 
+                  data-add-id="${item.id}"
+                  ${!disponivel ? 'disabled' : ''}
+                  class="px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1 active:scale-95 ${
+                    disponivel 
+                      ? 'bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-sm shadow-amber-500/20' 
+                      : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700'
+                  }"
+                >
+                  <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                  <span>Adicionar</span>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        `;
+      }).join('');
+
+      if (window.lucide) lucide.createIcons();
+
+      // Listener nos botões de adicionar
+      cardapioGrid.querySelectorAll('[data-add-id]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const id = e.currentTarget.getAttribute('data-add-id');
+          adicionarAoCarrinho(id);
+        });
+      });
+    }
+
+    // Filtros de Dia da Semana (Exceto Domingo)
+    const diaBtns = document.querySelectorAll('.dia-btn');
+    const bannerDomingo = document.getElementById('banner-domingo-fechado');
+    const hojeNum = new Date().getDay(); // 0 = Domingo, 1 = Segunda, ... 6 = Sábado
+    const diasNomes = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado'];
+    const diaHojeNome = diasNomes[hojeNum];
+
+    if (hojeNum === 0) {
+      if (bannerDomingo) bannerDomingo.classList.remove('hidden');
+      diaSemanaAtivo = 'segunda'; // No domingo, exibe segunda para planejamento
+    } else {
+      diaSemanaAtivo = diaHojeNome; // Dia atual
+    }
+
+    function atualizarBotoesDiaUI() {
+      diaBtns.forEach(b => {
+        const d = b.getAttribute('data-dia');
+        if (d === diaSemanaAtivo) {
+          b.classList.remove('bg-slate-900', 'text-slate-300', 'border', 'border-slate-800', 'font-semibold');
+          b.classList.add('bg-amber-500', 'text-slate-950', 'font-bold', 'shadow-sm');
+        } else {
+          b.classList.remove('bg-amber-500', 'text-slate-950', 'font-bold', 'shadow-sm');
+          b.classList.add('bg-slate-900', 'text-slate-300', 'border', 'border-slate-800', 'font-semibold');
+        }
+      });
+    }
+    atualizarBotoesDiaUI();
+
+    diaBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        diaSemanaAtivo = btn.getAttribute('data-dia') || 'todos';
+        atualizarBotoesDiaUI();
+        renderCardapio();
+      });
+    });
+
+    // Filtros de Categoria
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => {
+          b.classList.remove('active', 'bg-amber-500', 'text-slate-950', 'shadow-sm', 'shadow-amber-500/20');
+          b.classList.add('bg-slate-900', 'text-slate-300', 'border-slate-800');
+        });
+        btn.classList.add('active', 'bg-amber-500', 'text-slate-950', 'shadow-sm', 'shadow-amber-500/20');
+        btn.classList.remove('bg-slate-900', 'text-slate-300', 'border-slate-800');
+        
+        categoriaAtiva = btn.getAttribute('data-category') || 'todos';
+        renderCardapio();
+      });
+    });
+
+    // Filtro de Busca
+    inputBusca?.addEventListener('input', (e) => {
+      buscaTexto = e.target.value.trim();
+      renderCardapio();
+    });
+
+    // ----------------------------------------------------
+    // GERENCIAMENTO DO CARRINHO DE COMPRAS
+    // ----------------------------------------------------
+    function adicionarAoCarrinho(pratoId) {
+      const p = cardapio.find(item => item.id === pratoId);
+      if (!p) return;
+
+      const existente = carrinho.find(c => c.id === pratoId);
+      if (existente) {
+        existente.quantidade += 1;
+      } else {
+        carrinho.push({
+          id: p.id,
+          nome: p.nome,
+          preco: Number(p.preco) || 0,
+          tamanho: p.tamanho || '',
+          quantidade: 1
+        });
+      }
+
+      salvarCarrinho();
+      atualizarCarrinhoUI();
+      showToast('Adicionado ao Carrinho', `${p.nome}`, 'success');
+    }
+
+    function alterarQtd(id, delta) {
+      const idx = carrinho.findIndex(c => c.id === id);
+      if (idx === -1) return;
+
+      carrinho[idx].quantidade += delta;
+      if (carrinho[idx].quantidade <= 0) {
+        carrinho.splice(idx, 1);
+      }
+
+      salvarCarrinho();
+      atualizarCarrinhoUI();
+    }
+
+    function removerItemCarrinho(id) {
+      carrinho = carrinho.filter(c => c.id !== id);
+      salvarCarrinho();
+      atualizarCarrinhoUI();
+      showToast('Item Removido', 'Item retirado do carrinho.', 'info');
+    }
+
+    btnEsvaziarCarrinho?.addEventListener('click', () => {
+      if (carrinho.length === 0) return;
+      carrinho = [];
+      salvarCarrinho();
+      atualizarCarrinhoUI();
+      showToast('Carrinho Limpo', 'Todos os itens foram removidos.', 'info');
+    });
+
+    function salvarCarrinho() {
+      try {
+        localStorage.setItem('deggust_carrinho', JSON.stringify(carrinho));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function atualizarCarrinhoUI() {
+      const totalItens = carrinho.reduce((acc, cur) => acc + cur.quantidade, 0);
+      const subtotal = carrinho.reduce((acc, cur) => acc + (cur.preco * cur.quantidade), 0);
+      const totalComTaxa = subtotal > 0 ? (subtotal + TAXA_ENTREGA) : 0;
+
+      // Badge no menu inferior
+      if (navCartBadge) {
+        if (totalItens > 0) {
+          navCartBadge.textContent = totalItens;
+          navCartBadge.classList.remove('hidden');
+        } else {
+          navCartBadge.classList.add('hidden');
+        }
+      }
+
+      // Atualização dos totais
+      if (carrinhoSubtotal) {
+        carrinhoSubtotal.textContent = subtotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+      }
+      if (carrinhoTaxa) {
+        carrinhoTaxa.textContent = subtotal > 0 ? (TAXA_ENTREGA.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })) : 'R$ 0,00';
+      }
+      if (carrinhoTotal) {
+        carrinhoTotal.textContent = totalComTaxa.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+      }
+
+      // Render da lista dentro da aba Carrinho
+      if (!carrinhoLista) return;
+
+      if (carrinho.length === 0) {
+        carrinhoLista.innerHTML = `
+          <div class="text-center py-10 px-4 bg-slate-900/40 rounded-2xl border border-slate-800">
+            <i data-lucide="shopping-basket" class="w-10 h-10 text-slate-600 mx-auto mb-2"></i>
+            <p class="text-xs font-bold text-slate-300">Seu carrinho está vazio</p>
+            <p class="text-[11px] text-slate-500 mt-1">Navegue até o Cardápio para escolher sua marmita!</p>
+            <button type="button" onclick="document.querySelector('[data-target=\\'tab-cardapio\\']').click()" class="mt-3 px-3 py-1.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs">
+              Ver Cardápio
+            </button>
+          </div>
+        `;
+      } else {
+        carrinhoLista.innerHTML = carrinho.map(item => {
+          const itemTotal = (item.preco * item.quantidade).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+          return `
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 flex items-center justify-between gap-3">
+              <div class="flex-1 min-w-0">
+                <h4 class="text-xs font-bold text-white truncate">${item.nome}</h4>
+                <div class="flex items-center gap-2 mt-0.5">
+                  <span class="text-xs text-amber-400 font-mono font-medium">${itemTotal}</span>
+                  ${item.tamanho ? `<span class="text-[10px] text-slate-400 bg-slate-800 px-1.5 py-0.2 rounded">${item.tamanho}</span>` : ''}
+                </div>
+              </div>
+
+              <!-- Controle de Quantidade -->
+              <div class="flex items-center gap-1 bg-slate-950 border border-slate-800 rounded-lg p-1">
+                <button type="button" data-action="dec" data-id="${item.id}" class="w-6 h-6 rounded flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 active:scale-95 transition-colors">
+                  <i data-lucide="minus" class="w-3 h-3"></i>
+                </button>
+                <span class="text-xs font-bold text-white px-1.5 min-w-[20px] text-center">${item.quantidade}</span>
+                <button type="button" data-action="inc" data-id="${item.id}" class="w-6 h-6 rounded flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 active:scale-95 transition-colors">
+                  <i data-lucide="plus" class="w-3 h-3"></i>
+                </button>
+              </div>
+
+              <!-- Remover -->
+              <button type="button" data-action="del" data-id="${item.id}" class="text-slate-500 hover:text-rose-400 p-1 transition-colors" title="Excluir">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </div>
+          `;
+        }).join('');
+
+        carrinhoLista.querySelectorAll('[data-action="inc"]').forEach(b => {
+          b.addEventListener('click', () => alterarQtd(b.dataset.id, 1));
+        });
+        carrinhoLista.querySelectorAll('[data-action="dec"]').forEach(b => {
+          b.addEventListener('click', () => alterarQtd(b.dataset.id, -1));
+        });
+        carrinhoLista.querySelectorAll('[data-action="del"]').forEach(b => {
+          b.addEventListener('click', () => removerItemCarrinho(b.dataset.id));
+        });
+      }
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    // Toggle de Dinheiro / Troco
+    radiosPagamento.forEach(radio => {
+      radio.addEventListener('change', () => {
+        if (radioDinheiro && radioDinheiro.checked) {
+          campoTrocoContainer.classList.remove('hidden');
+        } else {
+          campoTrocoContainer.classList.add('hidden');
+        }
+      });
+    });
+
+    // ----------------------------------------------------
+    // REQUISITO 3: CONEXÃO AUTOMÁTICA & ENVIO DO PEDIDO
+    // ----------------------------------------------------
+    btnFinalizarPedido?.addEventListener('click', async () => {
+      if (carrinho.length === 0) {
+        showToast('Carrinho Vazio', 'Adicione pelo menos um item para continuar.', 'warning');
+        switchTab('tab-cardapio');
+        return;
+      }
+
+      const nome = clienteNome.value.trim();
+      const telefone = clienteTelefone.value.trim();
+      const endereco = clienteEndereco.value.trim();
+      const referencia = clienteReferencia.value.trim();
+      const troco = clienteTroco.value.trim();
+      const observacoes = clienteObservacoes.value.trim();
+
+      const formaPagamentoChecked = document.querySelector('input[name="pagamento-metodo"]:checked');
+      const formaPagamento = formaPagamentoChecked ? formaPagamentoChecked.value : 'PIX';
+
+      if (!nome) {
+        showToast('Campo Obrigatório', 'Por favor, informe seu nome.', 'warning');
+        clienteNome.focus();
+        return;
+      }
+      if (!telefone) {
+        showToast('Campo Obrigatório', 'Por favor, informe seu telefone/WhatsApp.', 'warning');
+        clienteTelefone.focus();
+        return;
+      }
+      if (!endereco) {
+        showToast('Campo Obrigatório', 'Por favor, informe o endereço de entrega.', 'warning');
+        clienteEndereco.focus();
+        return;
+      }
+
+      // Salva perfil automaticamente
+      try {
+        localStorage.setItem('deggust_perfil', JSON.stringify({ nome, telefone, endereco }));
+        perfilNome.value = nome;
+        perfilTelefone.value = telefone;
+        perfilEndereco.value = endereco;
+      } catch (e) {}
+
+      // Gera ID aleatório único para o pedido
+      const randStr = Math.random().toString(36).substring(2, 7).toUpperCase();
+      const timestampPart = Date.now().toString(36).toUpperCase().slice(-4);
+      const pedidoId = `DEG-${randStr}-${timestampPart}`;
+
+      // Formata a URL de sincronização exata exigida:
+      // https://januthruam-lgtm.github.io/App-do-cliente-/index.html?pedidoId=ID_GERADO
+      const linkConexao = `https://januthruam-lgtm.github.io/App-do-cliente-/index.html?pedidoId=${pedidoId}`;
+
+      // Calcula valores
+      const subtotal = carrinho.reduce((acc, cur) => acc + (cur.preco * cur.quantidade), 0);
+      const total = subtotal + TAXA_ENTREGA;
+
+      // Monta dados do pedido
+      const novoPedido = {
+        id: pedidoId,
+        linkConexao: linkConexao,
+        data: new Date().toISOString(),
+        dataHoraFormatada: new Date().toLocaleString('pt-BR'),
+        cliente: {
+          nome,
+          telefone,
+          endereco,
+          referencia,
+          observacoes
+        },
+        itens: [...carrinho],
+        subtotal,
+        taxaEntrega: TAXA_ENTREGA,
+        total,
+        formaPagamento,
+        troco: (formaPagamento === 'Dinheiro' && troco) ? troco : null,
+        status: 'Recebido'
+      };
+
+      // Salva no histórico local
+      pedidosHistorico.unshift(novoPedido);
+      try {
+        localStorage.setItem('deggust_pedidos', JSON.stringify(pedidosHistorico));
+      } catch (e) {}
+
+      // Persiste no Firestore se disponível
+      if (db) {
+        try {
+          await addDoc(collection(db, "pedidos"), {
+            ...novoPedido,
+            criadoEm: serverTimestamp()
+          });
+          console.log("[Firestore] Pedido registrado no banco:", pedidoId);
+        } catch (err) {
+          console.warn("[Firestore] Aviso ao salvar pedido:", err);
+        }
+      }
+
+      // Formata mensagem para o WhatsApp do restaurante
+      const listaItensMsg = carrinho.map(item => {
+        const itemTotal = (item.preco * item.quantidade).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        return `• *${item.quantidade}x* ${item.nome} (${itemTotal})`;
+      }).join('\n');
+
+      const textoWhatsApp = 
+`🍛 *NOVO PEDIDO - MARMITARIA DEGGUST*
+📋 *Código:* #${pedidoId}
+
+👤 *Cliente:* ${nome}
+📱 *Telefone:* ${telefone}
+📍 *Endereço:* ${endereco}
+${referencia ? `🏷️ *Referência:* ${referencia}\n` : ''}
+🛒 *ITENS DO PEDIDO:*
+${listaItensMsg}
+
+💰 *Subtotal:* ${subtotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+🛵 *Taxa de Entrega:* ${TAXA_ENTREGA.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+💵 *TOTAL:* ${total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+
+💳 *Pagamento:* ${formaPagamento}
+${novoPedido.troco ? `🪙 *Troco para:* ${novoPedido.troco}\n` : ''}${observacoes ? `📝 *Observações:* ${observacoes}\n` : ''}
+_(Pedido gerado automaticamente pelo App MARMITARIA DEGGUST)_`;
+
+      const whatsappUrl = `https://wa.me/${currentWhatsAppNumero}?text=${encodeURIComponent(textoWhatsApp)}`;
+      ultimoLinkWhatsApp = whatsappUrl;
+
+      // Limpa carrinho ativo
+      carrinho = [];
+      salvarCarrinho();
+      atualizarCarrinhoUI();
+
+      // Exibe Modal de Sucesso e redirecionamento
+      if (modalPedidoId) modalPedidoId.textContent = `#${pedidoId}`;
+
+      abrirModalSucesso();
+
+      // Dispara abertura do WhatsApp
+      window.open(whatsappUrl, '_blank');
+    });
+
+    function abrirModalSucesso() {
+      if (!modalSucesso) return;
+      modalSucesso.classList.remove('opacity-0', 'pointer-events-none');
+      const box = modalSucesso.querySelector('div');
+      if (box) box.classList.remove('scale-95');
+    }
+
+    function fecharModalSucesso() {
+      if (!modalSucesso) return;
+      modalSucesso.classList.add('opacity-0', 'pointer-events-none');
+      const box = modalSucesso.querySelector('div');
+      if (box) box.classList.add('scale-95');
+      switchTab('tab-pedidos');
+    }
+
+    btnAbrirWhatsAppModal?.addEventListener('click', () => {
+      if (ultimoLinkWhatsApp) {
+        window.open(ultimoLinkWhatsApp, '_blank');
+      }
+    });
+
+    btnFecharModalSucesso?.addEventListener('click', fecharModalSucesso);
+
+    // ----------------------------------------------------
+    // ABA 3: HISTÓRICO DE PEDIDOS ("MEUS PEDIDOS")
+    // ----------------------------------------------------
+    function renderHistoricoPedidos() {
+      if (!historicoPedidosLista) return;
+
+      if (pedidosContadorBadge) {
+        pedidosContadorBadge.textContent = `${pedidosHistorico.length} pedido${pedidosHistorico.length === 1 ? '' : 's'}`;
+      }
+
+      if (pedidosHistorico.length === 0) {
+        historicoPedidosLista.innerHTML = `
+          <div class="text-center py-12 px-4 bg-slate-900/40 rounded-2xl border border-slate-800">
+            <i data-lucide="receipt" class="w-10 h-10 text-slate-600 mx-auto mb-2"></i>
+            <p class="text-xs font-bold text-slate-300">Nenhum pedido realizado ainda</p>
+            <p class="text-[11px] text-slate-500 mt-1">Seus pedidos e links de conexão aparecerão aqui após finalizar.</p>
+            <button type="button" onclick="document.querySelector('[data-target=\\'tab-cardapio\\']').click()" class="mt-3 px-3.5 py-2 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs">
+              Ver Cardápio
+            </button>
+          </div>
+        `;
+        if (window.lucide) lucide.createIcons();
+        return;
+      }
+
+      historicoPedidosLista.innerHTML = pedidosHistorico.map(p => {
+        const totalBRL = Number(p.total).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        const qtdItens = p.itens ? p.itens.reduce((acc, cur) => acc + cur.quantidade, 0) : 0;
+
+        return `
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3 shadow-md">
+            
+            <!-- Topo do Card -->
+            <div class="flex items-center justify-between border-b border-slate-800/80 pb-2">
+              <div>
+                <span class="font-mono text-xs font-bold text-amber-400">#${p.id}</span>
+                <p class="text-[10px] text-slate-400">${p.dataHoraFormatada || 'Hoje'}</p>
+              </div>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                ${p.status || 'Recebido'}
+              </span>
+            </div>
+
+            <!-- Resumo dos Itens -->
+            <div class="text-xs text-slate-300 space-y-1">
+              ${(p.itens || []).map(i => `
+                <div class="flex justify-between text-[11px]">
+                  <span class="truncate">${i.quantidade}x ${i.nome}</span>
+                  <span class="font-mono text-slate-400">${(i.preco * i.quantidade).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+                </div>
+              `).join('')}
+            </div>
+
+            <!-- Total e Pagamento -->
+            <div class="flex items-center justify-between pt-2 border-t border-slate-800/80 text-xs">
+              <span class="text-slate-400">Pagamento: <strong class="text-slate-200">${p.formaPagamento}</strong></span>
+              <span class="font-bold text-amber-400 font-mono text-sm">${totalBRL}</span>
+            </div>
+
+            <!-- Ações: Copiar Código & WhatsApp -->
+            <div class="grid grid-cols-2 gap-2 pt-1">
+              <button 
+                type="button" 
+                data-copy-id="${p.id}" 
+                class="py-2 px-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-800 text-[11px] font-semibold text-slate-200 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                title="Copiar código do pedido"
+              >
+                <i data-lucide="copy" class="w-3.5 h-3.5 text-amber-400"></i>
+                <span>Copiar Código</span>
+              </button>
+
+              <a 
+                href="https://wa.me/${currentWhatsAppNumero}?text=${encodeURIComponent(`Olá, gostaria de consultar o andamento do meu pedido #${p.id} na MARMITARIA DEGGUST.`)}" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                class="py-2 px-2.5 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/30 text-[11px] font-semibold text-emerald-400 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                title="Conversar sobre este pedido no WhatsApp"
+              >
+                <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
+                <span>WhatsApp</span>
+              </a>
+            </div>
+
+          </div>
+        `;
+      }).join('');
+
+      if (window.lucide) lucide.createIcons();
+
+      // Listeners para cópia rápida do código do pedido
+      historicoPedidosLista.querySelectorAll('[data-copy-id]').forEach(b => {
+        b.addEventListener('click', async (e) => {
+          const id = e.currentTarget.getAttribute('data-copy-id');
+          if (id) {
+            await navigator.clipboard.writeText(id);
+            showToast('Código Copiado!', `Código #${id} copiado para a área de transferência.`, 'success');
+          }
+        });
+      });
+    }
+
+    // ----------------------------------------------------
+    // HELPER: TOAST NOTIFICATIONS
+    // ----------------------------------------------------
+    let toastTimeout;
+    function showToast(titulo, msg, tipo = 'success') {
+      const toast = document.getElementById('toast-app');
+      const toastTitulo = document.getElementById('toast-titulo');
+      const toastDesc = document.getElementById('toast-descricao');
+      const iconWrapper = document.getElementById('toast-icon-wrapper');
+
+      if (!toast) return;
+
+      toastTitulo.textContent = titulo;
+      toastDesc.textContent = msg;
+
+      if (tipo === 'success') {
+        iconWrapper.className = "w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center flex-shrink-0";
+        iconWrapper.innerHTML = '<i data-lucide="check" class="w-3.5 h-3.5"></i>';
+      } else if (tipo === 'warning') {
+        iconWrapper.className = "w-6 h-6 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center flex-shrink-0";
+        iconWrapper.innerHTML = '<i data-lucide="alert-circle" class="w-3.5 h-3.5"></i>';
+      } else {
+        iconWrapper.className = "w-6 h-6 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center flex-shrink-0";
+        iconWrapper.innerHTML = '<i data-lucide="info" class="w-3.5 h-3.5"></i>';
+      }
+
+      if (window.lucide) lucide.createIcons();
+
+      toast.classList.remove('-translate-y-20', 'opacity-0');
+
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.add('-translate-y-20', 'opacity-0');
+      }, 3000);
+    }
+
+    // Sincronização da Logo e do WhatsApp do Estabelecimento
+    function setupClientStoreConfig() {
+      const headerLogo = document.getElementById('client-header-logo-img');
+      const splashLogo = document.getElementById('client-splash-logo-img');
+      const headerWhatsapp = document.getElementById('header-whatsapp-display');
+      const supportLink = document.getElementById('support-whatsapp-link');
+      const supportText = document.getElementById('support-whatsapp-text');
+
+      function applyLogo(url) {
+        if (!url) return;
+        if (headerLogo) headerLogo.src = url;
+        if (splashLogo) splashLogo.src = url;
+        document.querySelectorAll("link[rel*='icon'], link[rel='apple-touch-icon']").forEach(link => {
+          link.href = url;
+        });
+      }
+
+      function applyWhatsApp(num, formatted) {
+        if (!num) return;
+        currentWhatsAppNumero = num;
+        currentWhatsAppFormatado = formatted || num;
+
+        if (headerWhatsapp) {
+          headerWhatsapp.textContent = `WhatsApp: ${currentWhatsAppFormatado}`;
+        }
+        if (supportLink) {
+          supportLink.href = `https://wa.me/${currentWhatsAppNumero}?text=${encodeURIComponent('Olá, gostaria de tirar uma dúvida sobre o cardápio da Marmitaria Deggust.')}`;
+        }
+        if (supportText) {
+          supportText.textContent = `Falar com Atendimento no WhatsApp (${currentWhatsAppFormatado})`;
+        }
+      }
+
+      // Lê do cache local imediatamente para exibição instantânea
+      const cachedLogo = localStorage.getItem('deggust_store_logo');
+      if (cachedLogo) applyLogo(cachedLogo);
+
+      const cachedWhatsAppNum = localStorage.getItem('deggust_whatsapp_numero');
+      const cachedWhatsAppFmt = localStorage.getItem('deggust_whatsapp_formatado');
+      if (cachedWhatsAppNum) applyWhatsApp(cachedWhatsAppNum, cachedWhatsAppFmt);
+
+      // Ouve alterações no Firestore da coleção configuracoes/restaurante
+      if (db) {
+        try {
+          const configRef = doc(db, 'configuracoes', 'restaurante');
+          onSnapshot(configRef, (snap) => {
+            if (snap.exists()) {
+              const data = snap.data();
+              if (data.logoUrl) {
+                localStorage.setItem('deggust_store_logo', data.logoUrl);
+                applyLogo(data.logoUrl);
+              }
+              if (data.whatsappNumero) {
+                localStorage.setItem('deggust_whatsapp_numero', data.whatsappNumero);
+                localStorage.setItem('deggust_whatsapp_formatado', data.whatsappFormatado || '');
+                applyWhatsApp(data.whatsappNumero, data.whatsappFormatado);
+              }
+            }
+          }, (err) => {
+            console.warn('[Config Cliente] Info snapshot:', err);
+          });
+        } catch (e) {
+          console.warn('[Config Cliente] Falha ao conectar listener:', e);
+        }
+      }
+    }
+
+    // Sistema de Convite com Link (MARMITARIA DEGGUST)
+    function setupConvidarModal() {
+      const modalConvidar = document.getElementById('modal-convidar');
+      const btnFecharModalConvidar = document.getElementById('btn-fechar-modal-convidar');
+      const inputLinkConvite = document.getElementById('input-link-convite');
+      const btnCopiarLinkConvite = document.getElementById('btn-copiar-link-convite');
+      const labelCopiarLinkConvite = document.getElementById('label-copiar-link-convite');
+      const btnCompartilharWhatsapp = document.getElementById('btn-compartilhar-whatsapp');
+      const btnCompartilharNativo = document.getElementById('btn-compartilhar-nativo');
+
+      const btnSidebarConvidar = document.getElementById('btn-sidebar-convidar');
+      const btnBannerConvidar = document.getElementById('btn-banner-convidar');
+      const btnPerfilConvidar = document.getElementById('btn-perfil-convidar');
+
+      // Link limpo para acesso do cliente
+      const appUrl = window.location.origin + '/cliente.html';
+      if (inputLinkConvite) inputLinkConvite.value = appUrl;
+
+      function abrirModalConvidar() {
+        // Se o menu lateral estiver aberto, fecha
+        const clientSidebarDrawer = document.getElementById('client-sidebar-drawer');
+        const clientSidebarBackdrop = document.getElementById('client-sidebar-backdrop');
+        const clientSidebarContainer = document.getElementById('client-sidebar-container');
+        if (clientSidebarDrawer && !clientSidebarDrawer.classList.contains('translate-x-full')) {
+          clientSidebarDrawer.classList.add('translate-x-full');
+          clientSidebarBackdrop?.classList.add('opacity-0', 'pointer-events-none');
+          setTimeout(() => clientSidebarContainer?.classList.add('pointer-events-none'), 300);
+        }
+
+        if (!modalConvidar) return;
+        modalConvidar.classList.remove('opacity-0', 'pointer-events-none');
+        const box = modalConvidar.querySelector('div');
+        if (box) box.classList.remove('scale-95');
+        document.body.classList.add('overflow-hidden');
+      }
+
+      function fecharModalConvidar() {
+        if (!modalConvidar) return;
+        modalConvidar.classList.add('opacity-0', 'pointer-events-none');
+        const box = modalConvidar.querySelector('div');
+        if (box) box.classList.add('scale-95');
+        document.body.classList.remove('overflow-hidden');
+      }
+
+      btnSidebarConvidar?.addEventListener('click', abrirModalConvidar);
+      btnBannerConvidar?.addEventListener('click', abrirModalConvidar);
+      btnPerfilConvidar?.addEventListener('click', abrirModalConvidar);
+
+      btnFecharModalConvidar?.addEventListener('click', fecharModalConvidar);
+      modalConvidar?.addEventListener('click', (e) => {
+        if (e.target === modalConvidar) fecharModalConvidar();
+      });
+
+      // Copiar link
+      btnCopiarLinkConvite?.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(appUrl);
+          if (labelCopiarLinkConvite) labelCopiarLinkConvite.textContent = 'Copiado!';
+          showToast('Link Copiado!', 'O link da MARMITARIA DEGGUST foi copiado com sucesso.', 'success');
+          setTimeout(() => {
+            if (labelCopiarLinkConvite) labelCopiarLinkConvite.textContent = 'Copiar';
+          }, 2500);
+        } catch (e) {
+          showToast('Aviso', 'Selecione o link e copie manualmente.', 'warning');
+        }
+      });
+
+      // Compartilhar WhatsApp com o nome MARMITARIA DEGGUST
+      btnCompartilharWhatsapp?.addEventListener('click', () => {
+        const mensagem = `*MARMITARIA DEGGUST* 🍲😋\n\nOlá! Olha o cardápio da MARMITARIA DEGGUST para fazer pedidos de marmitas fresquinhas e deliciosas:\n${appUrl}`;
+        const zapUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(mensagem)}`;
+        window.open(zapUrl, '_blank');
+      });
+
+      // Compartilhar nativo / outros aplicativos
+      btnCompartilharNativo?.addEventListener('click', async () => {
+        const dados = {
+          title: 'MARMITARIA DEGGUST - Cardápio & Pedidos',
+          text: 'Faça seu pedido de marmita deliciosa na MARMITARIA DEGGUST 🍲😋:',
+          url: appUrl
+        };
+        if (navigator.share) {
+          try {
+            await navigator.share(dados);
+          } catch (err) {
+            console.log('Share cancelado ou não suportado', err);
+          }
+        } else {
+          try {
+            await navigator.clipboard.writeText(appUrl);
+            showToast('Link Copiado!', 'Link copiado para você colar onde quiser.', 'success');
+          } catch (e) {
+            showToast('Aviso', 'Copie o link acima no campo de texto.', 'warning');
+          }
+        }
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modalConvidar && !modalConvidar.classList.contains('pointer-events-none')) {
+          fecharModalConvidar();
+        }
+      });
+    }
+
+    // Encerra a tela de abertura suavemente
+    function dismissClientSplash() {
+      const splash = document.getElementById('app-splash-screen');
+      if (!splash) return;
+      splash.style.opacity = '0';
+      setTimeout(() => {
+        splash.classList.add('hidden');
+        splash.style.display = 'none';
+      }, 450);
+    }
+
+    // Inicialização ao carregar a página
+    document.addEventListener('DOMContentLoaded', () => {
+      setupClientStoreConfig();
+      setupConvidarModal();
+      carregarDadosPerfil();
+      atualizarCarrinhoUI();
+      listenToFirestoreCardapio();
+      if (window.lucide) lucide.createIcons();
+
+      // Fechamento suave da tela de abertura
+      setTimeout(() => {
+        dismissClientSplash();
+      }, 1200);
+    });
   </script>
+
 </body>
 </html>
