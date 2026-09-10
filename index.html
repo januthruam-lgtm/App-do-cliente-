@@ -1,149 +1,994 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MARMITARIA DEGGUST - Cardápio</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
-</head>
-<body class="bg-slate-900 text-slate-100 min-h-screen pb-24">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Marmitaria Deggust - Painel do Vendedor</title>
+    <meta name="description" content="Painel de gestão de cardápio e pedidos para vendedores da Marmitaria Deggust." />
+    <meta property="og:title" content="Marmitaria Deggust - Painel do Vendedor" />
+    <meta property="og:description" content="Painel de gestão de cardápio e pedidos para vendedores da Marmitaria Deggust." />
+    <meta property="og:type" content="website" />
+    <meta name="theme-color" content="#d97706" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Deggust Vend" />
 
-  <!-- Header -->
-  <header class="bg-slate-800 border-b border-slate-700 p-4 sticky top-0 z-50 shadow-md">
-    <div class="max-w-xl mx-auto flex items-center gap-3">
-      <img src="logo.png" alt="Logo" class="w-12 h-12 rounded-full border border-orange-500 object-cover" onerror="this.src='https://via.placeholder.com/48'">
-      <div>
-        <h1 class="font-bold text-lg text-white">MARMITARIA DEGGUST</h1>
-        <p class="text-xs text-emerald-400 flex items-center gap-1 font-medium">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Cardápio Atualizado
-        </p>
-      </div>
-    </div>
-  </header>
+    <!-- PWA Web App Manifest e Ícones do Vendedor -->
+    <link rel="manifest" href="/manifest-vendedor.json" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/pwa-192x192.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
-  <main class="max-w-xl mx-auto p-4 space-y-4">
-    <h2 class="text-sm font-semibold text-slate-400 tracking-wider uppercase">Escolha a sua marmita</h2>
+    <!-- Captura instantânea do prompt nativo de instalação do App do Vendedor -->
+    <script>
+      window.__deferredPromptVendedor = null;
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        window.__deferredPromptVendedor = e;
+        console.log('[PWA Vendedor] Evento nativo de instalação capturado e pronto.');
+        window.dispatchEvent(new CustomEvent('vendor-pwa-ready'));
+      });
+    </script>
 
-    <!-- Lista Dinâmica de Marmitas -->
-    <div id="cardapioContainer" class="space-y-3">
-      <p class="text-xs text-slate-500 text-center py-8">Buscando cardápio do dia...</p>
-    </div>
-  </main>
-
-  <!-- Barra de Finalização de Pedido -->
-  <footer id="carrinhoBar" class="fixed bottom-0 left-0 right-0 bg-slate-800 border-t border-slate-700 p-4 hidden">
-    <div class="max-w-xl mx-auto flex items-center justify-between gap-4">
-      <div>
-        <p class="text-xs text-slate-400">Total do Pedido</p>
-        <p id="totalValor" class="text-lg font-bold text-orange-400">R$ 0,00</p>
-      </div>
-      <button onclick="enviarWhatsApp()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-5 py-3 rounded-xl transition flex items-center gap-2 shadow-lg shadow-emerald-600/20">
-        <i data-lucide="message-circle"></i> Enviar Pedido
-      </button>
-    </div>
-  </footer>
-
-  <!-- Firebase Integration -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyCT-DpI06em24o7cjgV67x2GaHom7BzLpM",
-      authDomain: "marmitaria-deggust.firebaseapp.com",
-      projectId: "marmitaria-deggust",
-      storageBucket: "marmitaria-deggust.firebasestorage.app",
-      messagingSenderId: "750433597063",
-      appId: "1:750433597063:web:b82cabcb8111411cd46a22",
-      measurementId: "G-7CYHMY89YV"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    let carrinho = {};
-
-    lucide.createIcons();
-
-    // Sincronizar Cardápio em Tempo Real
-    onSnapshot(collection(db, "cardapio"), (snapshot) => {
-      const container = document.getElementById('cardapioContainer');
-      container.innerHTML = "";
-
-      if (snapshot.empty) {
-        container.innerHTML = `<p class="text-xs text-slate-500 text-center py-8">Nenhum prato disponível no momento.</p>`;
-        return;
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+      body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
       }
+      h1, h2, h3, .font-heading {
+        font-family: 'Outfit', sans-serif;
+      }
+    </style>
+  </head>
+  <body class="bg-slate-50 text-slate-900 min-h-screen antialiased flex flex-col">
+    <!-- Tela de Abertura do App (Splash Screen) -->
+    <div id="app-splash-screen" class="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-slate-950 text-white transition-opacity duration-500">
+      <div class="flex flex-col items-center text-center p-6 max-w-xs animate-in fade-in zoom-in duration-300">
+        <div class="relative mb-5">
+          <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl p-1 bg-gradient-to-tr from-amber-500 via-amber-400 to-amber-600 shadow-2xl shadow-amber-500/30 flex items-center justify-center overflow-hidden">
+            <img id="splash-logo-img" src="/icon.svg" alt="Logo Marmitaria Deggust" class="w-full h-full object-cover rounded-[22px] bg-slate-900" />
+          </div>
+          <div class="absolute -bottom-2 -right-2 bg-emerald-500 text-slate-950 p-1.5 rounded-full shadow-md">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          </div>
+        </div>
+        
+        <h1 id="splash-title" class="font-heading font-extrabold text-2xl tracking-tight text-white mb-1">Marmitaria Deggust</h1>
+        <p id="splash-subtitle" class="text-xs text-amber-400 font-medium tracking-wide">Painel do Vendedor & Gestão</p>
+        
+        <div class="mt-8 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+          <span class="text-[11px] text-slate-400 font-semibold tracking-wider uppercase">Iniciando Aplicativo...</span>
+        </div>
+      </div>
+    </div>
 
-      snapshot.forEach((docItem) => {
-        const prato = docItem.data();
-        const id = docItem.id;
+    <!-- Top Header -->
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="relative w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-600 p-0.5 shadow-sm shadow-amber-500/20 shrink-0">
+            <img id="vendor-header-logo-img" src="/icon.svg" alt="Logo Marmitaria Deggust" class="w-full h-full object-cover rounded-[10px] bg-slate-900" />
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="font-heading font-extrabold text-xl text-slate-900 leading-none">Marmitaria Deggust</h1>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wide uppercase bg-amber-100 text-amber-900 border border-amber-200">
+                Painel do Proprietário
+              </span>
+            </div>
+            <p class="text-xs text-slate-500 font-medium hidden sm:block">Gestão de Cardápio Firestore & Configurações</p>
+          </div>
+        </div>
 
-        const itemEl = document.createElement('div');
-        itemEl.className = "bg-slate-800 border border-slate-700/80 p-4 rounded-2xl flex items-center justify-between gap-4 shadow-md";
-        itemEl.innerHTML = `
+        <!-- Botão Menu Lateral (Três Traços) -->
+        <div class="flex items-center">
+          <button 
+            type="button" 
+            id="open-sidebar-btn"
+            class="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs shadow-sm hover:shadow transition-all active:scale-95 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+            aria-label="Abrir menu lateral"
+            title="Menu de Opções"
+          >
+            <!-- Três Traços (Ícone Hamburger) -->
+            <svg class="w-5 h-5 stroke-[2.4]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+            <span class="text-xs font-bold tracking-wide">Menu</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Menu Lateral (Drawer com Três Traços) -->
+    <div id="sidebar-drawer-container" class="fixed inset-0 z-50 pointer-events-none transition-all duration-300">
+      <!-- Backdrop translúcido escuro -->
+      <div 
+        id="sidebar-backdrop" 
+        class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs opacity-0 transition-opacity duration-300 pointer-events-none"
+      ></div>
+
+      <!-- Painel Lateral / Drawer -->
+      <aside 
+        id="sidebar-drawer" 
+        class="fixed top-0 right-0 bottom-0 w-84 max-w-[85vw] bg-white shadow-2xl flex flex-col transition-transform duration-300 ease-in-out translate-x-full border-l border-slate-200 pointer-events-auto z-10"
+        aria-label="Menu Lateral de Opções"
+      >
+        <!-- Topo do Menu Lateral -->
+        <div class="p-4 sm:p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50/80">
           <div class="flex items-center gap-3">
-            <img src="${prato.imagem}" class="w-16 h-16 rounded-xl object-cover bg-slate-900 border border-slate-700">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-600 p-0.5 shadow-sm shadow-amber-500/20 shrink-0">
+              <img src="/icon.svg" alt="Logo" class="w-full h-full object-cover rounded-[10px] bg-slate-900" />
+            </div>
             <div>
-              <h3 class="font-bold text-white text-base">${prato.nome}</h3>
-              <p class="text-xs text-slate-400 line-clamp-2 mt-0.5">${prato.descricao}</p>
-              <p class="text-sm font-bold text-orange-400 mt-1">R$ ${(prato.preco || 0).toFixed(2)}</p>
+              <h2 class="font-heading font-extrabold text-sm text-slate-900 leading-tight">Menu do Vendedor</h2>
+              <p class="text-[11px] text-slate-500">Marmitaria Deggust</p>
             </div>
           </div>
-          <div class="flex items-center gap-2 bg-slate-900 p-1.5 rounded-xl border border-slate-700">
-            <button onclick="alterarQtd('${id}', '${prato.nome}', ${prato.preco}, -1)" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold flex items-center justify-center">-</button>
-            <span id="qtd-${id}" class="text-sm font-bold w-4 text-center">0</span>
-            <button onclick="alterarQtd('${id}', '${prato.nome}', ${prato.preco}, 1)" class="w-7 h-7 rounded-lg bg-orange-600 hover:bg-orange-500 text-white font-bold flex items-center justify-center">+</button>
+          <button 
+            type="button" 
+            id="close-sidebar-btn" 
+            class="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-200/70 transition-all cursor-pointer"
+            aria-label="Fechar menu lateral"
+            title="Fechar"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Conteúdo do Menu -->
+        <div class="flex-1 p-4 sm:p-5 space-y-5 overflow-y-auto">
+
+          <!-- 1. Perfil / Conta do Vendedor -->
+          <div class="space-y-2">
+            <span class="text-[10px] font-extrabold tracking-wider uppercase text-slate-400">Conta & Acesso</span>
+            <div id="vendor-header-box">
+              <button 
+                type="button" 
+                id="open-vendor-auth-btn"
+                class="w-full flex items-center justify-between p-3.5 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-600 text-slate-950 shadow-sm transition-all hover:shadow cursor-pointer"
+              >
+                <div class="flex items-center gap-2.5">
+                  <span class="text-base">🔑</span>
+                  <div class="text-left">
+                    <span class="block font-bold">Área do Vendedor</span>
+                    <span class="block text-[10px] font-medium text-slate-900/80">Entrar ou criar conta segura</span>
+                  </div>
+                </div>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </button>
+
+              <div id="vendor-logged-info" class="hidden flex items-center justify-between bg-slate-50 border border-slate-200 p-3 rounded-xl">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-full bg-amber-500 text-slate-950 font-extrabold flex items-center justify-center text-xs shadow-xs" id="vendor-avatar-letter">
+                    V
+                  </div>
+                  <div class="text-left leading-tight">
+                    <span id="vendor-display-name" class="block font-bold text-slate-800 text-xs truncate max-w-[130px]">Vendedor</span>
+                    <span class="block text-[10px] text-emerald-700 font-semibold flex items-center gap-1">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Conectado
+                    </span>
+                  </div>
+                </div>
+                <button 
+                  type="button" 
+                  id="vendor-logout-btn" 
+                  title="Desconectar da conta de vendedor"
+                  class="text-slate-400 hover:text-rose-600 p-1.5 rounded-lg hover:bg-rose-50 transition-colors cursor-pointer"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
           </div>
-        `;
-        container.appendChild(itemEl);
-      });
-      lucide.createIcons();
-    });
 
-    window.alterarQtd = (id, nome, preco, delta) => {
-      if (!carrinho[id]) carrinho[id] = { nome, preco, qtd: 0 };
-      carrinho[id].qtd += delta;
+          <!-- 2. Aplicativo & Ações -->
+          <div class="space-y-2">
+            <span class="text-[10px] font-extrabold tracking-wider uppercase text-slate-400">Aplicativo & Links</span>
+            
+            <!-- Botão PWA: Instalar App do Vendedor -->
+            <button 
+              type="button" 
+              id="install-vendor-pwa-btn"
+              class="w-full flex items-center justify-between p-3.5 rounded-xl text-xs font-bold bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 shadow-sm transition-all cursor-pointer border border-amber-400/50"
+              title="Instalar App do Vendedor na sua tela de aplicativos"
+            >
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-slate-950/20 flex items-center justify-center">
+                  <svg class="w-4 h-4 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                  </svg>
+                </div>
+                <div class="text-left">
+                  <span id="install-vendor-btn-label" class="block font-bold">Instalar App do Vendedor</span>
+                  <span class="block text-[10px] font-normal text-slate-900/80">Adicionar à tela inicial</span>
+                </div>
+              </div>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </button>
 
-      if (carrinho[id].qtd <= 0) delete carrinho[id];
+            <!-- Link: App do Cliente -->
+            <a 
+              href="/cliente.html" 
+              id="nav-to-client-btn"
+              target="_blank" 
+              rel="noopener noreferrer"
+              class="w-full flex items-center justify-between p-3.5 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white shadow-xs transition-all"
+            >
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-amber-400">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                  </svg>
+                </div>
+                <div class="text-left">
+                  <span class="block font-bold">Ver App do Cliente</span>
+                  <span class="block text-[10px] font-normal text-slate-400">Abrir cardápio público</span>
+                </div>
+              </div>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+              </svg>
+            </a>
+          </div>
 
-      document.getElementById(`qtd-${id}`).innerText = carrinho[id] ? carrinho[id].qtd : 0;
-      atualizarCarrinho();
-    };
+          <!-- 3. Navegação Rápida pelas Seções -->
+          <div class="space-y-2">
+            <span class="text-[10px] font-extrabold tracking-wider uppercase text-slate-400">Navegação no Painel</span>
+            <div class="space-y-1">
+              <a 
+                href="#form-card" 
+                class="sidebar-nav-link flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:text-amber-600 hover:bg-amber-50 transition-colors"
+              >
+                <span class="text-sm">🍲</span>
+                <span>Cadastrar Prato</span>
+              </a>
+              <a 
+                href="#dishes-list" 
+                class="sidebar-nav-link flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:text-amber-600 hover:bg-amber-50 transition-colors"
+              >
+                <span class="text-sm">📋</span>
+                <span>Cardápio do Dia</span>
+              </a>
+              <a 
+                href="#live-orders-container" 
+                class="sidebar-nav-link flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:text-amber-600 hover:bg-amber-50 transition-colors"
+              >
+                <span class="text-sm">📦</span>
+                <span>Gestor de Pedidos</span>
+              </a>
+              <a 
+                href="#order-settings-card" 
+                class="sidebar-nav-link flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:text-amber-600 hover:bg-amber-50 transition-colors"
+              >
+                <span class="text-sm">⚙️</span>
+                <span>Configurações & Chave PIX</span>
+              </a>
+            </div>
+          </div>
 
-    function atualizarCarrinho() {
-      let total = 0;
-      let qtdTotal = 0;
+        </div>
 
-      Object.values(carrinho).forEach(item => {
-        total += item.preco * item.qtd;
-        qtdTotal += item.qtd;
-      });
+        <!-- Rodapé do Menu Lateral -->
+        <div class="p-4 border-t border-slate-200 bg-slate-50 space-y-2">
+          <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs text-slate-600">
+            <span class="font-medium text-[11px]">Banco Firestore:</span>
+            <span class="flex items-center gap-1.5 font-bold text-emerald-700 text-[11px]">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              Conectado
+            </span>
+          </div>
+          <p class="text-[10px] text-center text-slate-400 font-medium">Deggust • Painel do Vendedor</p>
+        </div>
+      </aside>
+    </div>
 
-      const bar = document.getElementById('carrinhoBar');
-      if (qtdTotal > 0) {
-        bar.classList.remove('hidden');
-        document.getElementById('totalValor').innerText = `R$ ${total.toFixed(2)}`;
-      } else {
-        bar.classList.add('hidden');
-      }
-    }
+    <!-- Main Content Area -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
 
-    window.enviarWhatsApp = () => {
-      let msg = "*NOVO PEDIDO - MARMITARIA DEGGUST*\n\n";
-      let total = 0;
+      <!-- Banner Prominente de Instalação do App do Vendedor (1 Clique Direto) -->
+      <section id="vendor-install-banner" class="bg-gradient-to-r from-slate-900 via-slate-900 to-amber-950/50 border border-amber-500/40 rounded-2xl p-4 sm:p-5 shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all">
+        <div class="flex items-center gap-3.5">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-600 to-amber-400 p-0.5 shadow-lg shadow-amber-500/20 shrink-0">
+            <div class="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center text-amber-400">
+              <svg class="w-6 h-6 stroke-[2.2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+              </svg>
+            </div>
+          </div>
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <h2 class="font-heading font-extrabold text-sm sm:text-base text-white tracking-tight">Instalar App do Vendedor na Tela de Aplicativos</h2>
+              <span id="banner-pwa-badge" class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Instalação Direta
+              </span>
+            </div>
+            <p class="text-xs text-slate-300 mt-1">
+              Instale o aplicativo oficial no seu celular (Android/iOS) ou computador. Abra com 1 clique direto na tela de aplicativos com ícone próprio, sem precisar abrir navegador ou digitar link.
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+          <button 
+            type="button" 
+            id="banner-install-vendor-btn"
+            class="w-full sm:w-auto px-5 py-2.5 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 transition-all flex items-center justify-center gap-2 shadow-md shadow-amber-500/20 active:scale-95 cursor-pointer border border-amber-400/50"
+          >
+            <svg class="w-4 h-4 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+            </svg>
+            <span id="banner-install-btn-label">Instalar App do Vendedor</span>
+          </button>
+        </div>
+      </section>
 
-      Object.values(carrinho).forEach(item => {
-        msg += `• ${item.qtd}x ${item.nome} - R$ ${(item.preco * item.qtd).toFixed(2)}\n`;
-        total += item.preco * item.qtd;
-      });
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left Column: Logo da Loja e Cadastro do Prato -->
+        <div class="lg:col-span-5 space-y-6">
 
-      msg += `\n*Total: R$ ${total.toFixed(2)}*`;
+          <!-- Card de Personalização da Logo do Estabelecimento -->
+          <section class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/70 flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-sm">
+                  🎨
+                </div>
+                <div>
+                  <h2 class="font-heading font-bold text-base text-slate-900">Logo do Estabelecimento</h2>
+                  <p class="text-xs text-slate-500 font-medium">Usada no ícone do app e na tela de abertura</p>
+                </div>
+              </div>
+              <button 
+                type="button" 
+                id="preview-splash-btn"
+                class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 transition-colors flex items-center gap-1 cursor-pointer"
+                title="Ver a tela de abertura do aplicativo com a sua logo"
+              >
+                <span>👁️</span>
+                <span>Testar Abertura</span>
+              </button>
+            </div>
 
-      const numeroWhatsApp = "5527999999999"; // INSIRA SEU NÚMERO AQUI (COM DDD)
-      window.open(`https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(msg)}`, '_blank');
-    };
-  </script>
-</body>
+            <div class="p-6 space-y-4">
+              <!-- Área de visualização da Logo Atual -->
+              <div class="flex items-center gap-4 p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+                <div class="relative w-16 h-16 rounded-2xl bg-slate-950 p-1 border-2 border-amber-500/50 shadow-md flex items-center justify-center shrink-0 overflow-hidden">
+                  <img 
+                    id="current-store-logo-img" 
+                    src="/icon.svg" 
+                    alt="Logo do Estabelecimento" 
+                    class="w-full h-full object-cover rounded-[12px]"
+                  />
+                </div>
+                <div class="flex-1 min-w-0">
+                  <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">Logo Atual do App</span>
+                  <p class="text-xs text-slate-800 font-semibold truncate" id="logo-status-text">Logo Deggust Ativa</p>
+                  <p class="text-[11px] text-emerald-600 font-semibold flex items-center gap-1 mt-0.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Ícone & Tela de Abertura sincronizados
+                  </p>
+                </div>
+              </div>
+
+              <!-- Inserir Própria Logo -->
+              <div class="space-y-2">
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                  Sua Nova Logo (Arquivo do Aparelho ou Link)
+                </label>
+                
+                <!-- Upload de Arquivo da Logo -->
+                <div class="flex flex-col gap-2">
+                  <label for="logo-file-input" class="flex flex-col items-center justify-center border-2 border-dashed border-amber-300 hover:border-amber-500 bg-amber-50/40 hover:bg-amber-50/80 rounded-xl p-3.5 cursor-pointer transition-all text-center group">
+                    <div class="w-9 h-9 rounded-full bg-amber-100 group-hover:bg-amber-200 text-amber-700 flex items-center justify-center mb-1.5 transition-colors">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <span class="text-xs font-bold text-slate-800">Escolher Logo do Celular ou Computador</span>
+                    <span class="text-[10px] text-slate-500 mt-0.5">PNG, JPG, SVG ou WebP (Galeria de Fotos)</span>
+                    <input type="file" id="logo-file-input" accept="image/*" class="hidden" />
+                  </label>
+
+                  <div class="flex items-center gap-2">
+                    <span class="text-[11px] text-slate-500 font-semibold whitespace-nowrap">Ou link da logo:</span>
+                    <input 
+                      type="url" 
+                      id="logo-url-input" 
+                      placeholder="https://exemplo.com/sua-logo.png" 
+                      class="flex-1 px-3 py-1.5 rounded-lg border border-slate-300 text-xs focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-hidden transition-all bg-white"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Ações da Logo -->
+              <div class="flex items-center justify-between gap-2 pt-1 border-t border-slate-100">
+                <button 
+                  type="button" 
+                  id="reset-default-logo-btn"
+                  class="text-xs text-slate-500 hover:text-rose-600 font-semibold underline cursor-pointer"
+                >
+                  Restaurar Padrão
+                </button>
+                <button 
+                  type="button" 
+                  id="save-logo-btn"
+                  class="px-4 py-2 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-600 text-slate-950 shadow-xs transition-all cursor-pointer flex items-center gap-1.5 active:scale-95"
+                >
+                  <span>💾</span>
+                  <span>Salvar Nova Logo</span>
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- Card de Configuração do WhatsApp para Pedidos -->
+          <section class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/70 flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm">
+                  📱
+                </div>
+                <div>
+                  <h2 class="font-heading font-bold text-base text-slate-900">WhatsApp de Pedidos</h2>
+                  <p class="text-xs text-slate-500 font-medium">Número para onde as mensagens dos clientes são enviadas</p>
+                </div>
+              </div>
+              <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Ativo
+              </span>
+            </div>
+
+            <div class="p-6 space-y-4">
+              <!-- Visualização do Número Atual -->
+              <div class="flex items-center justify-between p-3.5 bg-emerald-50/50 rounded-xl border border-emerald-200/80 gap-3">
+                <div class="flex items-center gap-3 min-w-0">
+                  <div class="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center font-bold text-lg shrink-0 shadow-xs">
+                    💬
+                  </div>
+                  <div class="min-w-0">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-800 block truncate">Número Atual de Recebimento</span>
+                    <p class="text-sm sm:text-base text-slate-900 font-extrabold tracking-tight truncate" id="current-whatsapp-display">(27) 99713-5078</p>
+                  </div>
+                </div>
+                <a 
+                  id="test-whatsapp-link"
+                  href="https://wa.me/5527997135078?text=Ol%C3%A1%2C%20teste%20de%20conex%C3%A3o%20do%20WhatsApp%20da%20Marmitaria%20Deggust!"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="px-3 py-1.5 rounded-lg text-xs font-bold bg-white hover:bg-emerald-100 text-emerald-700 border border-emerald-300 transition-colors shadow-2xs flex items-center gap-1.5 shrink-0 cursor-pointer"
+                  title="Enviar mensagem de teste para este WhatsApp"
+                >
+                  <span>📲</span>
+                  <span>Testar</span>
+                </a>
+              </div>
+
+              <!-- Campo para Alterar Número -->
+              <div class="space-y-1.5">
+                <label for="vendor-whatsapp-input" class="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                  Alterar Número do WhatsApp (com DDD)
+                </label>
+                <div class="relative">
+                  <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 font-bold text-xs">
+                    🇧🇷 +55
+                  </span>
+                  <input 
+                    type="tel" 
+                    id="vendor-whatsapp-input" 
+                    placeholder="(27) 99713-5078" 
+                    maxlength="17"
+                    class="w-full pl-16 pr-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold text-slate-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-hidden transition-all bg-white"
+                  />
+                </div>
+                <p class="text-[11px] text-slate-500">
+                  Insira o DDD + número (ex: 27997135078 ou 27 99713-5078). O sistema formata automaticamente.
+                </p>
+              </div>
+
+              <!-- Ações do WhatsApp -->
+              <div class="flex items-center justify-between gap-2 pt-1 border-t border-slate-100">
+                <button 
+                  type="button" 
+                  id="reset-default-whatsapp-btn"
+                  class="text-xs text-slate-500 hover:text-rose-600 font-semibold underline cursor-pointer"
+                >
+                  Restaurar Padrão
+                </button>
+                <button 
+                  type="button" 
+                  id="save-whatsapp-btn"
+                  class="px-4 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition-all cursor-pointer flex items-center gap-1.5 active:scale-95"
+                >
+                  <span>💾</span>
+                  <span>Salvar Novo WhatsApp</span>
+                </button>
+              </div>
+            </div>
+          </section>
+          
+          <!-- Formulário de Cadastro / Edição -->
+          <section class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/70 flex items-center justify-between">
+              <div>
+                <h2 id="form-title" class="font-heading font-bold text-lg text-slate-900">Cadastrar Novo Prato</h2>
+                <p class="text-xs text-slate-500 font-medium">Os dados são salvos na coleção "cardapio" do Firestore</p>
+              </div>
+              <button 
+                type="button" 
+                id="cancel-edit-btn" 
+                class="hidden text-xs font-bold text-slate-500 hover:text-slate-800 underline"
+              >
+                Cancelar Edição
+              </button>
+            </div>
+
+            <form id="dish-form" class="p-6 space-y-4">
+              <div>
+                <label for="dish-nome" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                  Nome do Prato *
+                </label>
+                <input 
+                  type="text" 
+                  id="dish-nome" 
+                  required 
+                  placeholder="Ex: Marmita Executiva de Picanha" 
+                  class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-hidden transition-all bg-white"
+                />
+              </div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label for="dish-categoria" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                    Categoria *
+                  </label>
+                  <select 
+                    id="dish-categoria" 
+                    class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-hidden transition-all bg-white font-medium"
+                  >
+                    <option value="Tradicional">Tradicional</option>
+                    <option value="Fit">Fit / Saudável</option>
+                    <option value="Especial">Especial do Chef</option>
+                    <option value="Executiva">Executiva</option>
+                    <option value="Bebidas">Bebidas</option>
+                    <option value="Sobremesas">Sobremesas</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label for="dish-preco" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                    Preço (R$) *
+                  </label>
+                  <input 
+                    type="number" 
+                    id="dish-preco" 
+                    required 
+                    step="0.10" 
+                    min="1" 
+                    placeholder="29.90" 
+                    class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-hidden transition-all bg-white"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label for="dish-descricao" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                  Descrição / Ingredientes
+                </label>
+                <textarea 
+                  id="dish-descricao" 
+                  rows="3" 
+                  placeholder="Ex: Arroz soltinho, feijão tropeiro, farofa de manteiga, vinagrete e picanha grelhada." 
+                  class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-hidden transition-all bg-white resize-none"
+                ></textarea>
+              </div>
+
+              <!-- Foto do Prato Inserida pelo Vendedor (Sem presets) -->
+              <div class="space-y-2">
+                <div class="flex items-center justify-between">
+                  <label class="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                    Foto do Prato
+                  </label>
+                  <span class="text-[11px] text-amber-700 font-semibold">Sua própria foto</span>
+                </div>
+
+                <!-- Preview da Foto Própria Selecionada -->
+                <div id="dish-photo-preview-box" class="hidden p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between gap-3">
+                  <div class="flex items-center gap-3 min-w-0">
+                    <img 
+                      id="photo-preview" 
+                      src="" 
+                      alt="Preview da Foto do Prato" 
+                      class="w-14 h-14 object-cover rounded-xl border border-slate-300 shadow-xs shrink-0"
+                    />
+                    <div class="min-w-0">
+                      <span class="text-xs font-bold text-slate-800 block truncate" id="dish-photo-filename">Foto selecionada</span>
+                      <span class="text-[10px] text-emerald-600 font-semibold flex items-center gap-1 mt-0.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Pronta para salvar no cardápio
+                      </span>
+                    </div>
+                  </div>
+                  <button 
+                    type="button" 
+                    id="remove-dish-photo-btn"
+                    class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer shrink-0"
+                    title="Remover foto"
+                  >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                  </button>
+                </div>
+
+                <!-- Botão de Upload de Foto do Aparelho (Galeria/Câmera) -->
+                <label for="dish-file-input" class="flex flex-col items-center justify-center border-2 border-dashed border-slate-300 hover:border-amber-500 bg-slate-50 hover:bg-amber-50/40 rounded-xl p-4 cursor-pointer transition-all text-center group">
+                  <div class="w-10 h-10 rounded-full bg-slate-200 group-hover:bg-amber-100 text-slate-600 group-hover:text-amber-700 flex items-center justify-center mb-1.5 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                  </div>
+                  <span class="text-xs font-bold text-slate-800">Escolher Foto do Prato (Galeria ou Câmera)</span>
+                  <span class="text-[10px] text-slate-500 mt-0.5">Tire uma foto na hora ou escolha da sua galeria</span>
+                  <input type="file" id="dish-file-input" accept="image/*" class="hidden" />
+                </label>
+
+                <!-- Campo Alternativo de URL -->
+                <div class="flex items-center gap-2 pt-1">
+                  <span class="text-[11px] text-slate-500 font-semibold whitespace-nowrap">Ou link:</span>
+                  <input 
+                    type="url" 
+                    id="dish-photo" 
+                    placeholder="https://exemplo.com/foto-do-prato.jpg" 
+                    class="flex-1 px-3 py-1.5 rounded-lg border border-slate-300 text-xs focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-hidden transition-all bg-white"
+                  />
+                </div>
+              </div>
+
+              <!-- Dias da Semana Disponíveis (exceto Domingo) -->
+              <div class="pt-1">
+                <div class="flex items-center justify-between mb-1.5">
+                  <label class="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                    Dias da Semana (Seg a Sáb) *
+                  </label>
+                  <div class="flex items-center gap-1.5 text-[11px]">
+                    <button type="button" id="select-all-days-btn" class="text-amber-700 hover:text-amber-900 font-semibold underline cursor-pointer">Marcar Todos</button>
+                    <span class="text-slate-300">|</span>
+                    <button type="button" id="clear-all-days-btn" class="text-slate-500 hover:text-slate-700 font-medium cursor-pointer">Limpar</button>
+                  </div>
+                </div>
+                <div class="grid grid-cols-3 sm:grid-cols-6 gap-1.5" id="dias-semana-container">
+                  <label class="dia-checkbox-label flex flex-col items-center justify-center p-2 rounded-xl border border-slate-200 bg-slate-50 hover:bg-amber-50 cursor-pointer transition-all has-[:checked]:border-amber-500 has-[:checked]:bg-amber-100 text-center">
+                    <input type="checkbox" name="dish-dias" value="segunda" checked class="hidden" />
+                    <span class="text-[11px] font-bold text-slate-800 leading-tight">Segunda</span>
+                    <span class="text-[9px] text-slate-500 font-medium">Seg</span>
+                  </label>
+                  <label class="dia-checkbox-label flex flex-col items-center justify-center p-2 rounded-xl border border-slate-200 bg-slate-50 hover:bg-amber-50 cursor-pointer transition-all has-[:checked]:border-amber-500 has-[:checked]:bg-amber-100 text-center">
+                    <input type="checkbox" name="dish-dias" value="terca" checked class="hidden" />
+                    <span class="text-[11px] font-bold text-slate-800 leading-tight">Terça</span>
+                    <span class="text-[9px] text-slate-500 font-medium">Ter</span>
+                  </label>
+                  <label class="dia-checkbox-label flex flex-col items-center justify-center p-2 rounded-xl border border-slate-200 bg-slate-50 hover:bg-amber-50 cursor-pointer transition-all has-[:checked]:border-amber-500 has-[:checked]:bg-amber-100 text-center">
+                    <input type="checkbox" name="dish-dias" value="quarta" checked class="hidden" />
+                    <span class="text-[11px] font-bold text-slate-800 leading-tight">Quarta</span>
+                    <span class="text-[9px] text-slate-500 font-medium">Qua</span>
+                  </label>
+                  <label class="dia-checkbox-label flex flex-col items-center justify-center p-2 rounded-xl border border-slate-200 bg-slate-50 hover:bg-amber-50 cursor-pointer transition-all has-[:checked]:border-amber-500 has-[:checked]:bg-amber-100 text-center">
+                    <input type="checkbox" name="dish-dias" value="quinta" checked class="hidden" />
+                    <span class="text-[11px] font-bold text-slate-800 leading-tight">Quinta</span>
+                    <span class="text-[9px] text-slate-500 font-medium">Qui</span>
+                  </label>
+                  <label class="dia-checkbox-label flex flex-col items-center justify-center p-2 rounded-xl border border-slate-200 bg-slate-50 hover:bg-amber-50 cursor-pointer transition-all has-[:checked]:border-amber-500 has-[:checked]:bg-amber-100 text-center">
+                    <input type="checkbox" name="dish-dias" value="sexta" checked class="hidden" />
+                    <span class="text-[11px] font-bold text-slate-800 leading-tight">Sexta</span>
+                    <span class="text-[9px] text-slate-500 font-medium">Sex</span>
+                  </label>
+                  <label class="dia-checkbox-label flex flex-col items-center justify-center p-2 rounded-xl border border-slate-200 bg-slate-50 hover:bg-amber-50 cursor-pointer transition-all has-[:checked]:border-amber-500 has-[:checked]:bg-amber-100 text-center">
+                    <input type="checkbox" name="dish-dias" value="sabado" checked class="hidden" />
+                    <span class="text-[11px] font-bold text-slate-800 leading-tight">Sábado</span>
+                    <span class="text-[9px] text-slate-500 font-medium">Sáb</span>
+                  </label>
+                </div>
+                <p class="text-[10px] text-slate-500 mt-1">A Marmitaria não funciona aos domingos. Selecione os dias em que este prato é servido.</p>
+              </div>
+
+              <div class="pt-2 flex items-center">
+                <label class="relative flex items-center gap-2.5 cursor-pointer">
+                  <input type="checkbox" id="dish-disponivel" checked class="w-4 h-4 text-amber-600 rounded border-slate-300 focus:ring-amber-500" />
+                  <span class="text-xs font-bold text-slate-700">Disponível imediatamente para pedidos</span>
+                </label>
+              </div>
+
+              <div class="pt-4 border-t border-slate-100 flex items-center gap-3">
+                <button 
+                  type="submit" 
+                  id="submit-btn" 
+                  class="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-sm font-bold bg-amber-600 hover:bg-amber-700 text-white shadow-sm hover:shadow transition-all active:scale-98"
+                >
+                  <span id="submit-btn-text">Salvar Prato no Firestore</span>
+                </button>
+              </div>
+            </form>
+          </section>
+
+        </div>
+
+        <!-- Right Column: Cardápio Atual em Tempo Real -->
+        <div class="lg:col-span-7 space-y-6">
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-xs p-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+              <div>
+                <div class="flex items-center gap-2">
+                  <h2 class="font-heading font-extrabold text-xl text-slate-900">Cardápio Cadastrado</h2>
+                  <span id="dishes-count" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-900">
+                    0 pratos
+                  </span>
+                </div>
+                <p class="text-xs text-slate-500 font-medium mt-0.5">Sincronizado em tempo real com a coleção "cardapio"</p>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <button 
+                  type="button" 
+                  id="load-samples-btn"
+                  class="px-3 py-2 rounded-xl text-xs font-bold bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 transition-colors flex items-center gap-1.5"
+                >
+                  <span>✨</span>
+                  <span>Carregar Pratos Exemplo</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Filtro por Dia da Semana (Exceto Domingo) -->
+            <div class="pt-4 border-t border-slate-100">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 mb-2.5">
+                <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                  <span>📅</span>
+                  <span>Organização por Dia da Semana:</span>
+                </span>
+                <span class="text-[10px] text-amber-800 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200 font-semibold w-fit">
+                  Exceto Domingo (Marmitaria Fechada)
+                </span>
+              </div>
+              <div class="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none" id="filtro-dias-semana">
+                <button type="button" data-dia-filter="todos" class="dia-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-600 text-white shadow-xs transition-all whitespace-nowrap cursor-pointer">
+                  Todos os Dias
+                </button>
+                <button type="button" data-dia-filter="segunda" class="dia-filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all whitespace-nowrap cursor-pointer">
+                  Segunda
+                </button>
+                <button type="button" data-dia-filter="terca" class="dia-filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all whitespace-nowrap cursor-pointer">
+                  Terça
+                </button>
+                <button type="button" data-dia-filter="quarta" class="dia-filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all whitespace-nowrap cursor-pointer">
+                  Quarta
+                </button>
+                <button type="button" data-dia-filter="quinta" class="dia-filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all whitespace-nowrap cursor-pointer">
+                  Quinta
+                </button>
+                <button type="button" data-dia-filter="sexta" class="dia-filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all whitespace-nowrap cursor-pointer">
+                  Sexta
+                </button>
+                <button type="button" data-dia-filter="sabado" class="dia-filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all whitespace-nowrap cursor-pointer">
+                  Sábado
+                </button>
+              </div>
+            </div>
+
+            <!-- Dishes list container -->
+            <div id="dishes-container" class="space-y-4 pt-4"></div>
+
+            <!-- Empty state -->
+            <div id="empty-dishes-state" class="text-center py-16 px-4">
+              <div class="w-16 h-16 mx-auto rounded-2xl bg-amber-50 flex items-center justify-center text-3xl mb-4 border border-amber-100 text-amber-600">
+                🍲
+              </div>
+              <h3 class="font-heading font-bold text-lg text-slate-800 mb-1">Nenhum prato cadastrado ainda</h3>
+              <p class="text-xs text-slate-500 max-w-sm mx-auto mb-5 leading-relaxed">
+                Use o formulário ao lado para cadastrar seu primeiro prato ou clique no botão abaixo para carregar exemplos clássicos da Marmitaria Deggust.
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto border-t border-slate-200 bg-white py-6">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+        <p>Marmitaria Deggust &bull; Painel Administrativo do Proprietário</p>
+        <p>WhatsApp de Pedidos: <strong class="text-slate-800 font-bold">+55 (27) 99713-5078</strong></p>
+      </div>
+    </footer>
+
+    <!-- Vendor Authentication Modal (Criar Conta & Login Seguro) -->
+    <div id="vendor-auth-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs">
+      <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 overflow-hidden relative">
+        <button 
+          type="button" 
+          id="close-vendor-modal-btn"
+          class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1.5 rounded-full hover:bg-slate-100 transition-colors"
+          title="Fechar"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+
+        <!-- Modal Header -->
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-12 h-12 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center text-2xl shadow-sm">
+            🛡️
+          </div>
+          <div>
+            <h3 class="font-heading font-extrabold text-lg text-slate-900 leading-tight">Conta do Vendedor</h3>
+            <p class="text-xs text-slate-500">Acesso seguro com usuário, email e senha salvos</p>
+          </div>
+        </div>
+
+        <!-- Auth Tabs (Alternar entre Login e Cadastro) -->
+        <div class="grid grid-cols-2 gap-1 p-1 bg-slate-100 rounded-xl mb-5">
+          <button 
+            type="button" 
+            id="tab-auth-login-btn"
+            class="py-2 text-xs font-bold rounded-lg transition-all bg-white text-slate-900 shadow-xs cursor-pointer"
+          >
+            Entrar na Conta
+          </button>
+          <button 
+            type="button" 
+            id="tab-auth-register-btn"
+            class="py-2 text-xs font-bold rounded-lg transition-all text-slate-600 hover:text-slate-900 cursor-pointer"
+          >
+            Criar Nova Conta
+          </button>
+        </div>
+
+        <!-- Form: Login -->
+        <form id="vendor-login-form" class="space-y-4">
+          <div>
+            <label for="login-email" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+              Email do Vendedor *
+            </label>
+            <input 
+              type="email" 
+              id="login-email" 
+              required 
+              placeholder="vendedor@deggust.com" 
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-hidden transition-all bg-white"
+            />
+          </div>
+
+          <div>
+            <label for="login-password" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+              Senha *
+            </label>
+            <input 
+              type="password" 
+              id="login-password" 
+              required 
+              placeholder="Digite sua senha" 
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-hidden transition-all bg-white"
+            />
+          </div>
+
+          <button 
+            type="submit" 
+            id="login-submit-btn"
+            class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-sm font-bold bg-slate-900 hover:bg-slate-800 text-white shadow-xs hover:shadow transition-all active:scale-98 cursor-pointer"
+          >
+            <span>Acessar Painel</span>
+          </button>
+        </form>
+
+        <!-- Form: Cadastro Seguro de Vendedor -->
+        <form id="vendor-register-form" class="space-y-3.5 hidden">
+          <div>
+            <label for="register-name" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+              Nome do Usuário / Vendedor *
+            </label>
+            <input 
+              type="text" 
+              id="register-name" 
+              required 
+              placeholder="Ex: Ruam Deggust" 
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-hidden transition-all bg-white"
+            />
+          </div>
+
+          <div>
+            <label for="register-email" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+              Email Comercial *
+            </label>
+            <input 
+              type="email" 
+              id="register-email" 
+              required 
+              placeholder="Ex: ruam@deggust.com" 
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-hidden transition-all bg-white"
+            />
+          </div>
+
+          <div>
+            <label for="register-password" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+              Senha Segura (Mínimo 6 caracteres) *
+            </label>
+            <input 
+              type="password" 
+              id="register-password" 
+              required 
+              minlength="6"
+              placeholder="Crie uma senha forte" 
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-hidden transition-all bg-white"
+            />
+          </div>
+
+          <div>
+            <label for="register-confirm-password" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+              Confirmar Senha *
+            </label>
+            <input 
+              type="password" 
+              id="register-confirm-password" 
+              required 
+              minlength="6"
+              placeholder="Repita a senha" 
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-hidden transition-all bg-white"
+            />
+          </div>
+
+          <div class="p-2.5 rounded-xl bg-amber-50/70 border border-amber-200 text-[11px] text-amber-900 leading-snug">
+            🔒 Sua conta de vendedor será salva no Firebase Authentication e registrada na coleção segura de vendedores do Firestore.
+          </div>
+
+          <button 
+            type="submit" 
+            id="register-submit-btn"
+            class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-sm font-bold bg-amber-600 hover:bg-amber-700 text-white shadow-xs hover:shadow transition-all active:scale-98 cursor-pointer"
+          >
+            <span>Salvar & Criar Conta Segura</span>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
+      <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200">
+        <div class="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-xl font-bold mb-4">
+          ⚠️
+        </div>
+        <h3 class="font-heading font-bold text-lg text-slate-900 mb-2">Excluir Prato?</h3>
+        <p class="text-xs text-slate-600 mb-6 leading-relaxed">
+          Tem certeza de que deseja excluir <strong id="delete-dish-name" class="text-slate-900"></strong> do cardápio? Essa ação removerá o prato da coleção do Firestore imediatamente.
+        </p>
+        <div class="flex items-center justify-end gap-3">
+          <button 
+            type="button" 
+            id="cancel-delete-btn" 
+            class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition-colors"
+          >
+            Cancelar
+          </button>
+          <button 
+            type="button" 
+            id="confirm-delete-btn" 
+            class="px-4 py-2 rounded-xl text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white transition-colors shadow-xs"
+          >
+            Sim, Excluir
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none"></div>
+
+    <script type="module" src="/src/admin.js"></script>
+  </body>
 </html>
